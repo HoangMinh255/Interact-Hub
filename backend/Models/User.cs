@@ -1,8 +1,7 @@
-public class User
+using Microsoft.AspNetCore.Identity;
+
+public class User : IdentityUser
 {
-    public int Id {get;set;}
-    public string? Username {get;set;}
-    public string? Password {get;set;}
-    public string? ImageUrl {get;set;}
-    public DateTime CreateAt {get;set;}
+    public string? ImageUrl { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
