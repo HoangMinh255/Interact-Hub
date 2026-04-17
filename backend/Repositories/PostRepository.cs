@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 public class PostRepository : IPostRepository
 {
@@ -14,24 +16,35 @@ public class PostRepository : IPostRepository
     {
         return await _context.Posts.FirstOrDefaultAsync(p => p.Id == id && p.IsDeleted == 0);
     }
-    public async Task CreatePost(Post post)
+    public async Task<IActionResult> CreatePost(Post post)
     {
         _context.Posts.Add(post);
         await SaveChanges();
+        return new OkResult();
     }
-    public async Task UpdatePost(Post post)
+    public async Task<IActionResult> UpdatePost(Post post)
     {
-        _context.Posts.Update(post);
-        await SaveChanges();
-    }
-    public async Task DeletePost(Post post)
-    {
-        if (post != null)
+        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == post.Id && p.IsDeleted == 0);
+        if (existingPost == null)
         {
-            post.IsDeleted = 1;
-            _context.Posts.Update(post);           
+            return new NotFoundResult();
         }
+        _context.Posts.Update(existingPost);
         await SaveChanges();
+        return new OkResult();
+
+    }
+    public async Task<IActionResult> DeletePost(Post post)
+    {
+        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == post.Id && p.IsDeleted == 0);
+        if (existingPost == null)
+        {
+            return new NotFoundResult();
+        }
+        existingPost.IsDeleted = 1;
+        _context.Posts.Update(existingPost);
+        await SaveChanges();
+        return new OkResult();        
     }
     public async Task<IList<Post>> GetFirst10Post(int page = 0)
     {
