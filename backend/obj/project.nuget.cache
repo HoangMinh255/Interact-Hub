@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "dYbGJ8F4E2A=",
+  "dgSpecHash": "k3TroVBznXQ=",
   "success": true,
   "projectFilePath": "D:\\CSharp\\InteractHub\\backend\\backend.csproj",
   "expectedPackageFiles": [
@@ -229,6 +229,30 @@
       "warningLevel": 1,
       "filePath": "D:\\CSharp\\InteractHub\\backend\\backend.csproj",
       "libraryId": "Microsoft.Extensions.Logging.Console",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1901",
+      "level": "Warning",
+      "message": "Package 'NuGet.Packaging' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
+      "projectPath": "D:\\CSharp\\InteractHub\\backend\\backend.csproj",
+      "warningLevel": 1,
+      "filePath": "D:\\CSharp\\InteractHub\\backend\\backend.csproj",
+      "libraryId": "NuGet.Packaging",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1901",
+      "level": "Warning",
+      "message": "Package 'NuGet.Protocol' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
+      "projectPath": "D:\\CSharp\\InteractHub\\backend\\backend.csproj",
+      "warningLevel": 1,
+      "filePath": "D:\\CSharp\\InteractHub\\backend\\backend.csproj",
+      "libraryId": "NuGet.Protocol",
       "targetGraphs": [
         "net10.0"
       ]

@@ -29,4 +29,46 @@ public class PostController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("api/posts/{id}")]
+    public async Task<IActionResult> GetPostById(int id)
+    {
+        var post = await _postRepository.GetPostById(id);
+        if (post == null)
+        {
+            return NotFound();
+        }
+
+        var user = await _userRepository.GetUserById(post.UserId.ToString());
+
+        var result = new
+        {
+            post.Id,
+            post.Title,
+            post.Content,
+            post.ImageUrl,
+            post.CreatedAt,
+            User = user
+        };
+
+        return Ok(result);
+    }
+
+    [HttpPost("api/posts")]
+    public async Task<IActionResult> CreatePost([FromBody] Post post)
+    {
+        return await _postRepository.CreatePost(post);
+    }
+
+    [HttpPut("api/posts/{id}")]
+    public async Task<IActionResult> UpdatePost([FromBody] Post post)
+    {
+        return await _postRepository.UpdatePost(post);
+    }
+
+    [HttpDelete("api/posts/{id}")]
+    public async Task<IActionResult> DeletePost([FromBody] Post post)
+    {
+        return await _postRepository.DeletePost(post);
+    }
 }

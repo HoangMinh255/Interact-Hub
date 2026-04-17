@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link} from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
+import { Login } from "../services/authService";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -14,18 +15,12 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
 
-      const res = {
-        username: "admin",
-        password: "123456",
-        role: "Admin",
-      };
+      const res = await Login(username, password);
 
       localStorage.setItem("user", JSON.stringify(res));
-      if(username === "admin" && password === "123456")
-      {
-        console.log("Login success, moving to dashboard...");
-        navigate("/dashboard");
-      }
+      localStorage.setItem("token", res.token);
+      console.log("Login success, moving to dashboard...");
+      navigate("/dashboard");
     } catch (err) {
       console.log(err);
       setFormErrors({
