@@ -1,54 +1,21 @@
-"use client";
-
-import * as React from "react";
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
-
-
-import { cn } from "./utils";
-
-function Avatar({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
-  return (
-    <AvatarPrimitive.Root
-      data-slot="avatar"
-      className={cn(
-        "relative flex size-10 shrink-0 overflow-hidden rounded-full",
-        className,
-      )}
-      {...props}
-    />
-  );
+interface AvatarProps {
+  name: string;
+  size?: "sm" | "md" | "lg";
+  color?: string;
 }
 
-function AvatarImage({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
-  return (
-    <AvatarPrimitive.Image
-      data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
-      {...props}
-    />
-  );
-}
+const sizeMap = {
+  sm: "w-8 h-8 text-xs",
+  md: "w-10 h-10 text-sm",
+  lg: "w-14 h-14 text-lg",
+};
 
-function AvatarFallback({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+const Avatar = ({ name, size = "md", color = "bg-blue-500" }: AvatarProps) => {
   return (
-    <AvatarPrimitive.Fallback
-      data-slot="avatar-fallback"
-      className={cn(
-        "bg-muted flex size-full items-center justify-center rounded-full",
-        className,
-      )}
-      {...props}
-    />
+    <div className={`${sizeMap[size]} ${color} rounded-full flex items-center justify-center text-white font-medium flex-shrink-0`}>
+      {name.charAt(0).toUpperCase()}
+    </div>
   );
-}
+};
 
-export { Avatar, AvatarImage, AvatarFallback };
+export default Avatar;
