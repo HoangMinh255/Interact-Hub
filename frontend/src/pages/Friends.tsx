@@ -11,8 +11,10 @@ const friends = [
 const Friends = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-4 flex gap-4">
-      <Sidebar />
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+      <div className="flex-1 px-0 md:px-4 py-6">
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100">
             <h2 className="text-base font-medium text-gray-800">Gợi ý kết bạn</h2>
@@ -28,13 +30,9 @@ const Friends = () => {
                   <p className="text-sm font-medium text-gray-800">{friend.name}</p>
                   <p className="text-xs text-gray-400">{friend.mutual} bạn chung</p>
                 </div>
-                <div className="flex gap-2">
-                  <button className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600">
-                    Kết bạn
-                  </button>
-                  <button className="px-4 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-lg hover:bg-gray-200">
-                    Bỏ qua
-                  </button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button className="px-4 py-1.5 bg-blue-500 ...">Kết bạn</button>
+                  <button className="px-4 py-1.5 bg-gray-100 ...">Bỏ qua</button>
                 </div>
               </div>
             ))}

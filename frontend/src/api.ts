@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "http://localhost:5226/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -29,8 +29,8 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (email: string, password: string) =>
     api.post("/auth/login", { email, password }),
-  register: (username: string, email: string, password: string) =>
-    api.post("/auth/register", { username, email, password }),
+  register: (userName: string, fullName: string, email: string, password: string) =>
+    api.post("/auth/register", { userName, fullName, email, password }),
 };
 
 export const postsAPI = {

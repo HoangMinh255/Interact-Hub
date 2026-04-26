@@ -40,7 +40,7 @@ function Profile() {
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-4">
         <div className="h-36 bg-blue-100"></div>
         <div className="px-6 pb-6">
-          <div className="flex items-end gap-4 -mt-10 mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-10 mb-4">
             <div className="relative">
               {avatar ? (
                 <img src={avatar} className="w-20 h-20 rounded-full object-cover border-4 border-white" />
@@ -66,7 +66,7 @@ function Profile() {
 
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
+              className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
             >
               {isEditing ? "Hủy" : "Chỉnh sửa hồ sơ"}
             </button>

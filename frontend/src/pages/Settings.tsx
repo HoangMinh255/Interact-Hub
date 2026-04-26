@@ -43,15 +43,17 @@ function Settings() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-4 flex gap-4">
-      <Sidebar />
-      <div className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-4">
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+      <div className="flex-1 px-0 md:px-4 py-6 flex flex-col gap-4">
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <h2 className="text-base font-medium text-gray-800 px-6 py-4 border-b border-gray-100">
             ⚙️ Cài đặt tài khoản
           </h2>
 
           {/* Tab */}
-          <div className="flex border-b border-gray-100">
+          <div className="flex border-b border-gray-100 overflow-x-auto">
             {[
               { key: "email", label: "📧 Đổi email" },
               { key: "password", label: "🔒 Đổi mật khẩu" },

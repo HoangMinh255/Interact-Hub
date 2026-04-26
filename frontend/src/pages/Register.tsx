@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authAPI } from "../api";
 
 interface RegisterForm {
   username: string;
@@ -9,10 +11,38 @@ interface RegisterForm {
 }
 
 const Register = () => {
+  const navigate = useNavigate();
   const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>();
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = (data: RegisterForm) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterForm) => {
+    setApiError(null);
+    setIsSubmitting(true);
+
+    try {
+      await authAPI.register(data.username, data.username, data.email, data.password);
+      navigate("/login");
+    } catch (error: unknown) {
+      const maybeMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: { data?: { errors?: string[]; message?: string } } }).response?.data?.message === "string"
+          ? (error as { response?: { data?: { errors?: string[]; message?: string } } }).response?.data?.message
+          : null;
+
+      const maybeErrors =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error
+          ? (error as { response?: { data?: { errors?: string[] } } }).response?.data?.errors
+          : undefined;
+
+      setApiError(maybeErrors?.[0] ?? maybeMessage ?? "Đăng ký thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -79,9 +109,14 @@ const Register = () => {
             {errors.confirmPassword && <p className="text-xs text-red-500 mt-1">{errors.confirmPassword.message}</p>}
           </div>
 
-          <button type="submit" className="w-full h-10 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600">
-            Đăng ký
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full h-10 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600"
+          >
+            {isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
           </button>
+          {apiError && <p className="text-xs text-red-500">{apiError}</p>}
         </form>
 
         <p className="text-sm text-gray-500 text-center mt-4">

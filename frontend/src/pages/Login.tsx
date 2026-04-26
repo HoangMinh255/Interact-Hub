@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authAPI } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 interface LoginForm {
   email: string;
@@ -7,10 +10,53 @@ interface LoginForm {
 }
 
 function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = (data: LoginForm) => {
-    console.log(data);
+  const onSubmit = async (data: LoginForm) => {
+    setApiError(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await authAPI.login(data.email, data.password);
+      const payload = response.data?.data;
+
+      if (!payload?.accessToken || !payload?.user) {
+        setApiError("Phản hồi đăng nhập không hợp lệ từ máy chủ.");
+        return;
+      }
+
+      login(payload.accessToken, {
+        id: payload.user.id,
+        username: payload.user.userName,
+        email: payload.user.email,
+        followersCount: 0,
+      });
+
+      navigate("/");
+    } catch (error: unknown) {
+      const maybeMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error &&
+        typeof (error as { response?: { data?: { errors?: string[]; message?: string } } }).response?.data?.message === "string"
+          ? (error as { response?: { data?: { errors?: string[]; message?: string } } }).response?.data?.message
+          : null;
+
+      const maybeErrors =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error
+          ? (error as { response?: { data?: { errors?: string[] } } }).response?.data?.errors
+          : undefined;
+
+      setApiError(maybeErrors?.[0] ?? maybeMessage ?? "Đăng nhập thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -54,10 +100,12 @@ function Login() {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full h-10 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600"
           >
-            Đăng nhập
+            {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
+          {apiError && <p className="text-xs text-red-500">{apiError}</p>}
         </form>
 
         <p className="text-sm text-gray-500 text-center mt-4">
