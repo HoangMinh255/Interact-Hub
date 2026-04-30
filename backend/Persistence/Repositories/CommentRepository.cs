@@ -26,7 +26,7 @@ public class CommentRepository : ICommentRepository
 
     public async Task<IList<Comment>> Get10CommentsFromPostByPostId(Guid PostId, int page = 0)
     {
-        return await _context.Comments.Where(c => c.PostId == PostId)
+        return await _context.Comments.Where(c => c.PostId == PostId && c.IsDeleted == false)
                                       .Include(c => c.User)
                                       .Skip(page * 10)
                                       .Take(10)
@@ -34,7 +34,7 @@ public class CommentRepository : ICommentRepository
     }
     public async Task<IList<Comment>> Get10CommentsByParentCommentIdFromPostByPostId(Guid PostId, Guid parentCommentId, int page = 0)
     {
-        return await _context.Comments.Where(c => c.ParentCommentId == parentCommentId && c.PostId == PostId)
+        return await _context.Comments.Where(c => c.ParentCommentId == parentCommentId && c.PostId == PostId && c.IsDeleted == false)
                                       .Include(c => c.User)
                                       .Skip(page * 10)
                                       .Take(10)
@@ -83,7 +83,7 @@ public class CommentRepository : ICommentRepository
 
     public async Task<IList<Comment>> GetCommentsByPostId(Guid postId)
     {
-        return await _context.Comments.Where(c => c.PostId == postId).ToListAsync();
+        return await _context.Comments.Where(c => c.PostId == postId && c.IsDeleted == false).ToListAsync();
     }
 
     public async Task SaveChanges()

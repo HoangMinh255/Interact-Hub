@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CSharp\\InteractHub\\backend\\test\\IntegrationTests\\IntegrationTests.csproj": {}
+    "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj": {}
   },
   "projects": {
-    "D:\\CSharp\\InteractHub\\backend\\test\\IntegrationTests\\IntegrationTests.csproj": {
+    "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\test\\IntegrationTests\\IntegrationTests.csproj",
+        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
         "projectName": "IntegrationTests",
-        "projectPath": "D:\\CSharp\\InteractHub\\backend\\test\\IntegrationTests\\IntegrationTests.csproj",
+        "projectPath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
         "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-        "outputPath": "D:\\CSharp\\InteractHub\\backend\\test\\IntegrationTests\\obj\\",
+        "outputPath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config",

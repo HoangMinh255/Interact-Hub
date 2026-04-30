@@ -6,9 +6,10 @@ public interface INotificationRepository
 {
     Task<IList<Notification>> GetAll();
     Task<Notification?> GetNotificationById(Guid id);
-    Task<IActionResult> CreateNotification(Notification notification);
-    Task<IActionResult> UpdateNotification(Notification notification);
-    Task<IActionResult> DeleteNotification(Notification notification);
+    Task<IList<Notification>> Get10NotificationsByRecipientId(string RecipientId, int page);
+    Task<Notification> CreateNotification(Notification notification);
+    Task<bool> UpdateNotification(Guid id);
+    Task<bool> DeleteNotification(Guid id);
     Task<IList<Notification>> GetNotificationsByUserId(string RecipientId);
     Task SaveChanges();
 }

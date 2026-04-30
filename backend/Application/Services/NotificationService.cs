@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using InteractHub.Domain.Entities;
 using InteractHub.Application.Interfaces.Repositories;
 using InteractHub.Application.Interfaces.Services;
+using InteractHub.Application.DTOs.Notification;
 namespace InteractHub.Application.Services;
 
 public class NotificationService : INotificationService
@@ -19,17 +20,34 @@ public class NotificationService : INotificationService
     {
         return await _notificationRepository.GetNotificationById(id);
     }
-    public async Task<IActionResult> CreateNotification(Notification notification)
+    public async Task<IList<Notification>> Get10NotificationsByRecipientId(string RecipientId, int page)
     {
-        return await _notificationRepository.CreateNotification(notification);
+        return await _notificationRepository.Get10NotificationsByRecipientId(RecipientId, page);
     }
-    public async Task<IActionResult> UpdateNotification(Notification notification)
+    public async Task<Notification> CreateNotification(CreateNotificationDto notification)
     {
-        return await _notificationRepository.UpdateNotification(notification);
+        var notificationEntity = new Notification
+        {
+            Id = Guid.NewGuid(),
+            RecipientId = notification.RecipientId,
+            ActorId = notification.ActorId,
+            Type =(byte) notification.Type,
+            Content = notification.Content,
+            RelatedEntityType = notification.RelatedEntityType,
+            RelatedEntityId = notification.RelatedEntityId,
+            IsRead = false,
+            CreatedAt = notification.CreatedAt,
+            IsDeleted = false
+        };
+        return await _notificationRepository.CreateNotification(notificationEntity);
     }
-    public async Task<IActionResult> DeleteNotification(Notification notification)
+    public async Task<bool> UpdateNotification(Guid id)
     {
-        return await _notificationRepository.DeleteNotification(notification);
+        return await _notificationRepository.UpdateNotification(id);
+    }
+    public async Task<bool> DeleteNotification(Guid id)
+    {
+        return await _notificationRepository.DeleteNotification(id);
     }
     public async Task<IList<Notification>> GetNotificationsByUserId(string RecipientId)
     {

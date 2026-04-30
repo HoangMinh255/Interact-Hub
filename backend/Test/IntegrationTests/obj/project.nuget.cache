@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "06Nfu+K9fQc=",
+  "dgSpecHash": "887myEBsXwk=",
   "success": true,
-  "projectFilePath": "D:\\CSharp\\InteractHub\\backend\\test\\IntegrationTests\\IntegrationTests.csproj",
+  "projectFilePath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\minhn\\.nuget\\packages\\coverlet.collector\\6.0.4\\coverlet.collector.6.0.4.nupkg.sha512",
     "C:\\Users\\minhn\\.nuget\\packages\\microsoft.codecoverage\\17.14.1\\microsoft.codecoverage.17.14.1.nupkg.sha512",

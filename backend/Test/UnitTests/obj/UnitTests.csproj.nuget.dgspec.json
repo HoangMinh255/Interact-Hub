@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CSharp\\InteractHub\\backend\\test\\UnitTests\\UnitTests.csproj": {}
+    "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj": {}
   },
   "projects": {
-    "D:\\CSharp\\InteractHub\\backend\\test\\UnitTests\\UnitTests.csproj": {
+    "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\test\\UnitTests\\UnitTests.csproj",
+        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj",
         "projectName": "UnitTests",
-        "projectPath": "D:\\CSharp\\InteractHub\\backend\\test\\UnitTests\\UnitTests.csproj",
+        "projectPath": "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj",
         "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-        "outputPath": "D:\\CSharp\\InteractHub\\backend\\test\\UnitTests\\obj\\",
+        "outputPath": "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config",

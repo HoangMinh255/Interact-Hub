@@ -22,26 +22,46 @@ public class NotificationRepository : INotificationRepository
     {
         return await _context.Notifications.FirstOrDefaultAsync(n => n.Id == id);
     }
-
-    public async Task<IActionResult> CreateNotification(Notification notification)
+    public async Task<IList<Notification>> Get10NotificationsByRecipientId(string RecipientId, int page = 0)
     {
-        await _context.Notifications.AddAsync(notification);
-        await SaveChanges();
-        return new OkResult();
+        return await _context.Notifications.Where(n => n.RecipientId == RecipientId && n.IsDeleted == false)
+                                           .Skip(page*10)
+                                           .Take(10)
+                                           .ToListAsync();
     }
 
-    public async Task<IActionResult> UpdateNotification(Notification notification)
+    public async Task<Notification> CreateNotification(Notification notification)
     {
-        _context.Notifications.Update(notification);
-        await SaveChanges();
-        return new OkResult();
+        var strategy = _context.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>{
+            await _context.Notifications.AddAsync(notification);
+            await SaveChanges();
+            return notification;
+        });
     }
 
-    public async Task<IActionResult> DeleteNotification(Notification notification)
+    public async Task<bool> UpdateNotification(Guid id)
     {
-        _context.Notifications.Remove(notification);
+        var existingNotification = await _context.Notifications.FirstOrDefaultAsync(n => n.Id == id);
+        if(existingNotification == null)
+        {
+            return false;
+        }
+        existingNotification.IsRead = true;
         await SaveChanges();
-        return new OkResult();
+        return true;
+    }
+
+    public async Task<bool> DeleteNotification(Guid id)
+    {
+        var existingNotification = await _context.Notifications.FirstOrDefaultAsync(n => n.Id == id);
+        if(existingNotification == null)
+        {
+            return false;
+        }
+        existingNotification.IsDeleted = true;
+        await SaveChanges();
+        return true;
     }
 
     public async Task<IList<Notification>> GetNotificationsByUserId(string RecipientId)
