@@ -1,77 +1,105 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using InteractHub.Domain.Entities;
-using InteractHub.Persistence.Repositories;
-using InteractHub.Application.Interfaces.Repositories;
+using InteractHub.Application.Interfaces.Services;
+using InteractHub.Application.DTOs.Notification;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Linq;
 namespace InteractHub.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class NotificationController : ControllerBase
 {
-    public readonly INotificationRepository _notificationRepository;
-    public NotificationController(INotificationRepository notificationRepository)
+    public readonly INotificationService _notificationService;
+    public NotificationController(INotificationService notificationRepository)
     {
-        _notificationRepository = notificationRepository;
+        _notificationService = notificationRepository;
     }
 
-    [Authorize]
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAllNotifications()
     {
-        var notifications = await _notificationRepository.GetAll();
+        var notifications = await _notificationService.GetAllNotifications();
         if(notifications == null)
         {
             return new BadRequestResult();
         }
-        return new OkResult();
+        return Ok(notifications);
     }
 
+    [HttpGet("user/{RecipientId}/page/{page}")]
     [Authorize]
-    [HttpGet("user/{RecipientId}")]
-    public async Task<IActionResult> GetNotificationsByUserId(string RecipientId)
+    public async Task<IActionResult> Get10NotificationsByRecipientId(string RecipientId, int page)
     {
-        var notifications = await _notificationRepository.GetNotificationsByUserId(RecipientId);
-        if(notifications == null)
-        {
-            return new BadRequestResult();
+        try{
+            var notifications = await _notificationService.Get10NotificationsByRecipientId(RecipientId,page);
+            if(notifications == null)
+            {
+                return BadRequest(new { message = "Thông báo phải có nội dung." });
+            }
+            return Ok(notifications);
         }
-        return new OkResult();
+        catch(Exception e)
+        {
+            return StatusCode(500, new { message = "Đã xảy ra lỗi hệ thống: ", error = e.Message });
+        }
+        
     }
 
     [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetNotificationById(Guid id)
     {
-        var notification = await _notificationRepository.GetNotificationById(id);
+        var notification = await _notificationService.GetNotificationById(id);
         if(notification == null)
         {
-            return new NotFoundResult();
+            return NotFound(new {message = "Không tìm thấy thông báo!"});
         }
-        return new OkResult();
+        return Ok(notification);
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> CreateNotification(Notification notification)
+    public async Task<IActionResult> CreateNotification([FromBody] CreateNotificationDto notification)
     {
-        await _notificationRepository.CreateNotification(notification);
-        return new OkResult();
+        // Lấy UserId từ token
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+
+        var createdNotification = await _notificationService.CreateNotification(notification);
+        return Ok(createdNotification);
     }
 
     [Authorize]
-    [HttpPut]
-    public async Task<IActionResult> UpdateNotification(Notification notification)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateNotification(Guid id)
     {
-        await _notificationRepository.UpdateNotification(notification);
-        return new OkResult();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+        
+
+        var isSucced = await _notificationService.UpdateNotification(id);
+        if(isSucced)
+        {
+            return Ok(new { message = "Cập nhật thông báo thành công!"});
+        }
+        return NotFound(new { message = "Không tìm thấy thông báo hoặc có lỗi khi cập nhật!"});
     }
 
     [Authorize]
-    [HttpDelete]
-    public async Task<IActionResult> DeleteNotification(Notification notification)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteNotification(Guid id)
     {
-        await _notificationRepository.DeleteNotification(notification);
-        return new OkResult();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null) return Unauthorized();
+
+        var isSucced = await _notificationService.UpdateNotification(id);
+        if(isSucced)
+        {
+            return Ok(new { message = "Xóa thông báo thành công!"});
+        }
+        return NotFound(new { message = "Không tìm thấy thông báo hoặc có lỗi khi xóa!"});
     }
 }
