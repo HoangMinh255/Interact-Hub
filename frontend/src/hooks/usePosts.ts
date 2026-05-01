@@ -1,16 +1,49 @@
 import { useState, useEffect } from "react";
+import { postsAPI } from "../api";
 import type { Post } from "../types";
+
+type PostApiResponse = {
+  id: string;
+  content: string;
+  createdAt: string;
+  authorName?: string;
+  authorAvatar?: string;
+  mediaUrls?: string[];
+  commentCount?: number;
+};
+
+const mapPost = (post: PostApiResponse): Post => ({
+  id: post.id,
+  visibility: 0,
+  authorName: post.authorName ?? "Unknown",
+  authorAvatar: post.authorAvatar ?? "",
+  content: post.content,
+  mediaUrls: post.mediaUrls??[],
+  likesCount: 0,
+  commentCount: post.commentCount ?? 0,
+  createdAt: new Date(post.createdAt).toLocaleString("vi-VN"),
+});
 
 export const usePosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setPosts([]);
+  const loadPosts = async () => {
+    setLoading(true);
+    try {
+      const response = await postsAPI.getAll();
+      const normalizedPosts = Array.isArray(response.data)
+        ? response.data.map(mapPost)
+        : [];
+      setPosts(normalizedPosts);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
+  };
+
+  useEffect(() => {
+    void loadPosts();
   }, []);
 
-  return { posts, loading };
+  return { posts, loading, reloadPosts: loadPosts, setPosts };
 };

@@ -1,15 +1,22 @@
 using InteractHub.Api.Extensions;
 using InteractHub.Application.Interfaces.Infrastructure;
 using InteractHub.Application.Interfaces.Services;
+using InteractHub.Application.Interfaces.Repositories;
 using InteractHub.Application.Services;
 using InteractHub.Infrastructure.Auth;
 using InteractHub.Infrastructure.Options;
 using InteractHub.Persistence.Extensions;
+using InteractHub.Persistence.Repositories;
+using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -19,7 +26,22 @@ builder.Services.Configure<IdentitySeedOptions>(builder.Configuration.GetSection
 builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection(CorsOptions.SectionName));
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+// Đăng ký tầng Application (Services)
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IFriendshipService, FriendshipService>();
+
+
+// Đăng ký tầng Application (Repositories)
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IPostMediaRepository, PostMediaRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -62,7 +84,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:3000",
-                "http://localhost:5173")
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:5226")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

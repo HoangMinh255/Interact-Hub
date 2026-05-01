@@ -8,12 +8,15 @@ export interface User {
 
 export interface Post {
   id: string;
-  author: User;
   content: string;
-  imageUrl?: string;
-  likesCount: number;
-  commentsCount: number;
+  visibility: number;
   createdAt: string;
+  authorName: string;
+  authorAvatar?: string;
+  mediaUrls: string[];
+  likesCount: number;
+  commentCount: number;
+  author?: User;
 }
 
 export interface Notification {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "../api";
+import PasswordStrength from "../components/ui/PasswordStrength";
 
 interface RegisterForm {
   username: string;
@@ -13,6 +14,7 @@ interface RegisterForm {
 const Register = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>();
+  const passwordValue = watch("password", "");
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -93,6 +95,7 @@ const Register = () => {
               className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none focus:border-blue-400"
             />
             {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
+            <PasswordStrength password={passwordValue} />
           </div>
 
           <div>

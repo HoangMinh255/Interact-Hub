@@ -10,13 +10,27 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
+    public DbSet<Post> Posts => Set<Post>();
+    public DbSet<PostMedia> PostMedia => Set<PostMedia>();
+    public DbSet<Comment> Comments => Set<Comment>();
+    public DbSet<Like> Likes => Set<Like>();
+    public DbSet<Friendship> Friendships => Set<Friendship>();
+    public DbSet<Story> Stories => Set<Story>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<Hashtag> Hashtags => Set<Hashtag>();
+    public DbSet<PostHashtag> PostHashtags => Set<PostHashtag>();
+    public DbSet<PostReport> PostReports => Set<PostReport>();
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(builder);
+        base.OnModelCreating(modelBuilder);
 
-        // Sau này Phase 2 thêm entity thì sẽ map ở đây hoặc tách ra IEntityTypeConfiguration
-        builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        // Áp dụng tất cả cấu hình từ Assembly này
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        
+        // Cấu hình Global Query Filter cho Soft Delete
+        modelBuilder.Entity<Post>().HasQueryFilter(p => !p.IsDeleted);
+        modelBuilder.Entity<Comment>().HasQueryFilter(c => !c.IsDeleted);
     }
 
     public override int SaveChanges()
