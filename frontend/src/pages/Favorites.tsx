@@ -8,7 +8,9 @@ const Favorites = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-4 flex gap-4">
-        <Sidebar />
+        <div className="hidden md:block">
+          <Sidebar />
+        </div>
       <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-4">
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <h2 className="text-base font-medium text-gray-800">❤️ Bài viết yêu thích</h2>

@@ -1,6 +1,0 @@
-D:\CSharp\InteractHub\backend\backend.Persistence\obj\Debug\net8.0\backend.Persistence.csproj.AssemblyReference.cache
-D:\CSharp\InteractHub\backend\backend.Persistence\obj\Debug\net8.0\backend.Persistence.GeneratedMSBuildEditorConfig.editorconfig
-D:\CSharp\InteractHub\backend\backend.Persistence\obj\Debug\net8.0\backend.Persistence.AssemblyInfoInputs.cache
-D:\CSharp\InteractHub\backend\backend.Persistence\obj\Debug\net8.0\backend.Persistence.AssemblyInfo.cs
-D:\CSharp\InteractHub\backend\backend.Persistence\obj\Debug\net8.0\backend.Persistence.csproj.CoreCompileInputs.cache
-D:\CSharp\InteractHub\backend\backend.Persistence\obj\Debug\net8.0\backend.Persistence.sourcelink.json

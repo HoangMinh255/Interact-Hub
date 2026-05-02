@@ -2,6 +2,7 @@ using InteractHub.Domain.Entities;
 using InteractHub.Persistence.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace InteractHub.Api.Extensions;
 
@@ -14,8 +15,28 @@ public static class SeedingExtensions
         
         var context = services.GetRequiredService<AppDbContext>();
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-        await context.Database.MigrateAsync();
+        try
+        {
+            await context.Database.MigrateAsync();
+        }
+        catch (SqlException ex) when (ex.Number == 2714)
+        {
+            // The dump already created the schema; continue startup without reapplying the initial migration.
+        }
+
+        // ==========================================
+        // 0. CREATE ROLES IF THEY DON'T EXIST
+        // ==========================================
+        var roleNames = new[] { "Admin", "User" };
+        foreach (var roleName in roleNames)
+        {
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
 
         // Chỉ chạy nếu Database chưa có User nào
         if (!await userManager.Users.AnyAsync())
@@ -31,6 +52,11 @@ public static class SeedingExtensions
             await userManager.CreateAsync(user1, "Pass123$");
             await userManager.CreateAsync(user2, "Pass123$");
             await userManager.CreateAsync(user3, "Pass123$");
+
+            // Assign User role to all seed users
+            await userManager.AddToRoleAsync(user1, "User");
+            await userManager.AddToRoleAsync(user2, "User");
+            await userManager.AddToRoleAsync(user3, "User");
 
             // ==========================================
             // 2. TẠO BẠN BÈ (Friendships)
@@ -82,8 +108,84 @@ public static class SeedingExtensions
                 new Like { PostId = post2Id, UserId = user2.Id },
                 new Like { PostId = post3Id, UserId = user1.Id }
             );
+            // ==========================================
+            // 5. TẠO HASHTAG VÀ LIÊN KẾT (Hashtags & PostHashtags)
+            // ==========================================
+            // Lấy từ content của các bài viết ở trên (#travel, #vungtau, #setup, #workspace)
+            var tagTravelId = Guid.NewGuid();
+            var tagVungTauId = Guid.NewGuid();
+            var tagSetupId = Guid.NewGuid();
+            var tagWorkspaceId = Guid.NewGuid();
 
-            // Lưu tất cả vào Database
+            context.Hashtags.AddRange(
+                new Hashtag { Id = tagTravelId, Name = "travel", CreatedAt = DateTime.UtcNow.AddDays(-2) },
+                new Hashtag { Id = tagVungTauId, Name = "vungtau", CreatedAt = DateTime.UtcNow.AddDays(-2) },
+                new Hashtag { Id = tagSetupId, Name = "setup", CreatedAt = DateTime.UtcNow.AddDays(-2) },
+                new Hashtag { Id = tagWorkspaceId, Name = "workspace", CreatedAt = DateTime.UtcNow.AddDays(-2) }
+            );
+
+            context.PostHashtags.AddRange(
+                // Gắn tag cho bài 1 của Minh Anh
+                new PostHashtag { PostId = post1Id, HashtagId = tagTravelId, CreatedAt = DateTime.UtcNow.AddHours(-2) },
+                new PostHashtag { PostId = post1Id, HashtagId = tagVungTauId, CreatedAt = DateTime.UtcNow.AddHours(-2) },
+                // Gắn tag cho bài 2 của Tuấn Kiệt
+                new PostHashtag { PostId = post2Id, HashtagId = tagSetupId, CreatedAt = DateTime.UtcNow.AddDays(-1) },
+                new PostHashtag { PostId = post2Id, HashtagId = tagWorkspaceId, CreatedAt = DateTime.UtcNow.AddDays(-1) }
+            );
+
+            // ==========================================
+            // 6. TẠO THÔNG BÁO (Notifications)
+            // ==========================================
+            context.Notifications.AddRange(
+                // 1. Minh Anh (user2) nhận được thông báo do Tuấn Kiệt (user1) like bài viết
+                new Notification 
+                { 
+                    Id = Guid.NewGuid(), 
+                    RecipientId = user2.Id,     // Người nhận là Minh Anh
+                    ActorId = user1.Id,         // Người thực hiện là Tuấn Kiệt
+                    Content = "Tuấn Kiệt đã thích bài viết của bạn.", 
+                    Type = 0,                   // Giả sử 0 là thông báo Like
+                    RelatedEntityId = post1Id.ToString(), // ID của bài viết được Like
+                    RelatedEntityType = "Post",           // Loại đối tượng là Bài viết
+                    IsRead = false, 
+                    IsDeleted = false, 
+                    CreatedAt = DateTime.UtcNow.AddHours(-1) 
+                },
+
+                // 2. Minh Anh (user2) nhận thông báo do Hoàng Long (user3) comment
+                new Notification 
+                { 
+                    Id = Guid.NewGuid(), 
+                    RecipientId = user2.Id,     // Người nhận là Minh Anh
+                    ActorId = user3.Id,         // Người thực hiện là Hoàng Long
+                    Content = "Hoàng Long đã bình luận về bài viết của bạn: 'Đẹp quá Anh ơi...'", 
+                    Type = 1,                   // Giả sử 1 là thông báo Comment
+                    RelatedEntityId = post1Id.ToString(), // ID của bài viết được comment
+                    RelatedEntityType = "Post",           
+                    IsRead = true, 
+                    IsDeleted = false, 
+                    CreatedAt = DateTime.UtcNow.AddMinutes(-50) 
+                },
+
+                // 3. Tuấn Kiệt (user1) nhận được thông báo do Minh Anh (user2) đồng ý kết bạn
+                new Notification 
+                { 
+                    Id = Guid.NewGuid(), 
+                    RecipientId = user1.Id,     // Người nhận là Tuấn Kiệt
+                    ActorId = user2.Id,         // Người thực hiện là Minh Anh
+                    Content = "Minh Anh đã chấp nhận lời mời kết bạn của bạn.", 
+                    Type = 3,                   // Giả sử 3 là thông báo FriendAccept
+                    RelatedEntityId = user2.Id, // Trỏ về ID của Minh Anh để click vào xem profile
+                    RelatedEntityType = "User", // Loại đối tượng là User
+                    IsRead = true, 
+                    IsDeleted = false, 
+                    CreatedAt = DateTime.UtcNow.AddDays(-5) 
+                }
+            );
+
+            // ==========================================
+            // 7. LƯU TẤT CẢ VÀO DATABASE
+            // ==========================================
             await context.SaveChangesAsync();
         }
     }

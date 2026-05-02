@@ -9,12 +9,13 @@ import Friends from "./pages/Friends";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
 import Favorites from "./pages/Favorites";
+import BottomNav from "./components/layout/BottomNav";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-100 pb-16 md:pb-0">
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -26,6 +27,7 @@ function App() {
             <Route path="/favorites" element={<Favorites />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <BottomNav />
         </div>
       </BrowserRouter>
     </AuthProvider>
