@@ -16,9 +16,9 @@ like post (FE/BE)
 đăng story (FE)  
 comment (FE)  
 report (FE)  
-friendship: block, reject, remove friend (FE)  
+friendship: block, remove friend(FE)  
 chức năng liên quan đến media đang lỗi (do không kết nối azure blob) (FE?/BE?)  
 
 known bug:  
 user không có role user   
-
+reject friend request ra lỗi 500
