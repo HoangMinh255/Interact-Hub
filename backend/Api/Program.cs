@@ -24,8 +24,14 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<IdentitySeedOptions>(builder.Configuration.GetSection(IdentitySeedOptions.SectionName));
 builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection(CorsOptions.SectionName));
+builder.Services.Configure<BlobStorageOptions>(
+    builder.Configuration.GetSection(BlobStorageOptions.SectionName));
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+//  Azure Blob options
+builder.Services.Configure<BlobStorageOptions>(
+builder.Configuration.GetSection(BlobStorageOptions.SectionName));
 
 // Đăng ký tầng Application (Services)
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -33,6 +39,8 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IFriendshipService, FriendshipService>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IStoryService, StoryService>();
 
 
 // Đăng ký tầng Application (Repositories)
@@ -41,6 +49,8 @@ builder.Services.AddScoped<IPostMediaRepository, PostMediaRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+builder.Services.AddScoped<IStoryRepository, StoryRepository>();
+
 
 
 builder.Services.AddEndpointsApiExplorer();

@@ -6,7 +6,7 @@ public class Story : BaseEntity
     public string UserId { get; set; } = null!;
     public string? Content { get; set; }
     public string MediaUrl { get; set; } = null!;
-    public byte MediaType { get; set; } // 0=Image, 1=Video
+    public string? MediaType { get; set; } // 0=Image, 1=Video
     public DateTime ExpireAt { get; set; }
     public bool IsActive { get; set; } = true;
 

@@ -5282,27 +5282,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\minhn\\.nuget\\packages\\": {}
+    "C:\\Users\\ASUS\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Domain\\Domain.csproj",
+      "projectUniqueName": "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\Domain.csproj",
       "projectName": "Domain",
-      "projectPath": "D:\\CSharp\\InteractHub\\backend\\Domain\\Domain.csproj",
-      "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-      "outputPath": "D:\\CSharp\\InteractHub\\backend\\Domain\\obj\\",
+      "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\Domain.csproj",
+      "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+      "outputPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -5379,7 +5376,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,39 +1,36 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CSharp\\InteractHub\\backend\\Application\\Application.csproj": {}
+    "D:\\2026\\01_05\\Interact-Hub\\backend\\Application\\Application.csproj": {}
   },
   "projects": {
-    "D:\\CSharp\\InteractHub\\backend\\Application\\Application.csproj": {
+    "D:\\2026\\01_05\\Interact-Hub\\backend\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Application\\Application.csproj",
+        "projectUniqueName": "D:\\2026\\01_05\\Interact-Hub\\backend\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "D:\\CSharp\\InteractHub\\backend\\Application\\Application.csproj",
-        "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-        "outputPath": "D:\\CSharp\\InteractHub\\backend\\Application\\obj\\",
+        "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+        "outputPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\CSharp\\InteractHub\\backend\\Domain\\Domain.csproj": {
-                "projectPath": "D:\\CSharp\\InteractHub\\backend\\Domain\\Domain.csproj"
+              "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\Domain.csproj"
               },
-              "D:\\CSharp\\InteractHub\\backend\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "D:\\CSharp\\InteractHub\\backend\\Infrastructure\\Infrastructure.csproj"
+              "D:\\2026\\01_05\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -53,6 +50,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.27.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -106,29 +107,26 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CSharp\\InteractHub\\backend\\Domain\\Domain.csproj": {
+    "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Domain\\Domain.csproj",
+        "projectUniqueName": "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "D:\\CSharp\\InteractHub\\backend\\Domain\\Domain.csproj",
-        "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-        "outputPath": "D:\\CSharp\\InteractHub\\backend\\Domain\\obj\\",
+        "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+        "outputPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -205,29 +203,26 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CSharp\\InteractHub\\backend\\Infrastructure\\Infrastructure.csproj": {
+    "D:\\2026\\01_05\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "D:\\2026\\01_05\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "D:\\CSharp\\InteractHub\\backend\\Infrastructure\\Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-        "outputPath": "D:\\CSharp\\InteractHub\\backend\\Infrastructure\\obj\\",
+        "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+        "outputPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -304,7 +299,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
