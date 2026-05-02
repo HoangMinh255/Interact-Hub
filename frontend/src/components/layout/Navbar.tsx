@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { usersAPI } from "../../api";
+
+type SearchUser = {
+  id: string;
+  fullName: string;
+  userName: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
+};
 
 const Navbar = () => {
   const [search, setSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [searchedUsers, setSearchedUsers] = useState<SearchUser[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-
-  const allUsers = [
-    { id: "1", name: "Carol White", type: "người dùng" },
-    { id: "2", name: "Alice Johnson", type: "người dùng" },
-    { id: "3", name: "Eve Davis", type: "người dùng" },
-    { id: "4", name: "David Brown", type: "người dùng" },
-    { id: "5", name: "Bob Smith", type: "người dùng" },
-  ];
 
   const allHashtags = [
     { tag: "#ReactJS", count: 1200 },
@@ -24,9 +27,43 @@ const Navbar = () => {
     { tag: "#CongNghe", count: 632 },
   ];
 
-  const filteredUsers = search.trim()
-    ? allUsers.filter((u) => u.name.toLowerCase().includes(search.toLowerCase()))
-    : [];
+  useEffect(() => {
+    const keyword = search.trim();
+
+    if (!keyword) {
+      setSearchedUsers([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    let active = true;
+    setSearchLoading(true);
+
+    const timer = window.setTimeout(() => {
+      usersAPI.searchUsers(keyword)
+        .then((response) => {
+          if (!active) return;
+
+          const items = response.data?.data?.items ?? [];
+          setSearchedUsers(items);
+        })
+        .catch(() => {
+          if (!active) return;
+          setSearchedUsers([]);
+        })
+        .finally(() => {
+          if (!active) return;
+          setSearchLoading(false);
+        });
+    }, 300);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [search]);
+
+  const filteredUsers = searchedUsers;
 
   const filteredTags = search.trim()
     ? allHashtags.filter((h) => h.tag.toLowerCase().includes(search.toLowerCase()))
@@ -67,7 +104,10 @@ const Navbar = () => {
           />
           {showResults && search.trim() && (
             <div className="absolute top-11 left-0 w-72 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden z-20">
-              {!hasResults && (
+              {searchLoading && (
+                <div className="px-4 py-3 text-sm text-gray-400">Đang tìm kiếm...</div>
+              )}
+              {!searchLoading && !hasResults && (
                 <div className="px-4 py-3 text-sm text-gray-400">Không tìm thấy kết quả</div>
               )}
               {filteredUsers.length > 0 && (
@@ -79,12 +119,16 @@ const Navbar = () => {
                       onClick={() => { navigate(`/profile/${u.id}`); setSearch(""); setShowResults(false); }}
                       className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 text-left"
                     >
-                      <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white text-xs font-medium">
-                        {u.name.charAt(0)}
+                        <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white text-xs font-medium overflow-hidden">
+                          {u.avatarUrl ? (
+                            <img src={u.avatarUrl} alt={u.fullName} className="w-full h-full object-cover" />
+                          ) : (
+                            (u.fullName || u.userName).charAt(0).toUpperCase()
+                          )}
                       </div>
                       <div>
-                        <p className="text-sm text-gray-800">{u.name}</p>
-                        <p className="text-xs text-gray-400">{u.type}</p>
+                          <p className="text-sm text-gray-800">{u.fullName}</p>
+                          <p className="text-xs text-gray-400">@{u.userName}</p>
                       </div>
                     </button>
                   ))}

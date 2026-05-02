@@ -4,8 +4,9 @@ import Sidebar from "../components/layout/Sidebar";
 import PostCard from "../components/PostCard";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 import { usePosts } from "../hooks/usePosts";
-import { postsAPI, friendsAPI } from "../api";
+import { postsAPI } from "../api";
 import type { Post } from "../types";
+import { useAuth } from "../context/AuthContext";
 
 const suggestions = [
   { id: "1", name: "Nguyễn Văn An", followers: 5 },
@@ -26,11 +27,13 @@ function Home() {
   const { posts: initialPosts, loading } = usePosts();
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState("");
+  const [visibility, setVisibility] = useState(0);
   const [followed, setFollowed] = useState<string[]>([]);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [selectedMedia, setSelectedMedia] = useState<Array<{url: string, type: number}>>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (initialPosts.length > 0 && posts.length === 0) {
@@ -65,9 +68,10 @@ function Home() {
       MediaType: m.type,
     }));
     try {
-      const response = await postsAPI.create(newPost.trim(), mediaPayload);
+      const response = await postsAPI.create(newPost.trim(), visibility, mediaPayload);
       console.log("Post created:", response.data);
       setNewPost("");
+      setVisibility(0);
       setSelectedMedia([]);
       // Reload posts to get fresh data with author info
       const freshResponse = await postsAPI.getAll();
@@ -77,6 +81,7 @@ function Home() {
             visibility: p.visibility,
             authorName: p.authorName ?? "Unknown",
             authorAvatar: p.authorAvatar ?? "",
+            author: p.authorId ? { id: p.authorId, fullName: p.authorName ?? "", userName: "", email: "", followersCount: 0 } : undefined,
             content: p.content,
             mediaUrls: p.mediaUrls ?? [],
             likesCount: 0,
@@ -88,7 +93,7 @@ function Home() {
     } catch (error: any) {
       //const errorMsg = error.response?.data?.message || error.message || "Đăng bài thất bại";
       //console.error("Post creation error:", errorMsg);
-      alert(`❌ Lỗi: ${errorMsg}`);
+      //alert(`❌ Lỗi: ${errorMsg}`);
     }
   };
 
@@ -141,6 +146,21 @@ function Home() {
               placeholder="Bạn đang nghĩ gì?"
               className="flex-1 h-9 bg-gray-100 rounded-full px-4 text-sm outline-none"
             />
+          </div>
+
+          <div className="ml-12 mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <label className="text-xs font-medium text-gray-500">
+              Quyền riêng tư
+            </label>
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(Number(e.target.value))}
+              className="h-9 rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-blue-400"
+            >
+              <option value={0}>Công khai</option>
+              <option value={1}>Bạn bè</option>
+              <option value={2}>Chỉ mình tôi</option>
+            </select>
           </div>
 
           {selectedMedia.length > 0 && (
@@ -205,8 +225,8 @@ function Home() {
         <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">B</div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-800">Bạn</p>
-            <p className="text-xs text-gray-400">@nguoidung</p>
+            <p className="text-sm font-medium text-gray-800">{user?.fullName ?? "error"}</p>
+            <p className="text-xs text-gray-400">@{user?.userName ?? "error"}</p>
           </div>
           <button onClick={() => navigate("/profile")} className="text-xs text-blue-500 hover:underline">
             Xem

@@ -93,9 +93,9 @@ public class PostService : IPostService
             dto.Hashtags
         );
     }
-    public async Task<IActionResult> DeletePost(Guid postId)
+    public async Task<IActionResult> DeletePost(Guid postId, string userId)
     {
-        var isSuccess = await _postRepository.DeletePost(postId);
+        var isSuccess = await _postRepository.DeletePost(postId, userId);
         if (isSuccess) 
         {
             return new OkResult();

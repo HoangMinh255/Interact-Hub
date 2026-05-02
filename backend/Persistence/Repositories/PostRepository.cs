@@ -161,9 +161,9 @@ public class PostRepository : IPostRepository
         return true;
     }
 
-    public async Task<bool> DeletePost(Guid postId)
+    public async Task<bool> DeletePost(Guid postId, string userId)
     {
-        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.IsDeleted == false);
+        var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == userId && p.IsDeleted == false);
         if (existingPost == null)
         {
             return false;

@@ -6,6 +6,7 @@ import PasswordStrength from "../components/ui/PasswordStrength";
 
 interface RegisterForm {
   username: string;
+  fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -23,7 +24,7 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      await authAPI.register(data.username, data.username, data.email, data.password);
+      await authAPI.register(data.username, data.fullName, data.email, data.password);
       navigate("/login");
     } catch (error: unknown) {
       const maybeMessage =
@@ -58,15 +59,27 @@ const Register = () => {
         <h2 className="text-xl font-medium text-gray-800 mb-6">Đăng ký</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+
           <div>
-            <label className="text-sm text-gray-600 mb-1 block">Tên người dùng</label>
+            <label className="text-sm text-gray-600 mb-1 block">username</label>
             <input
-              {...register("username", { required: "Vui lòng nhập tên người dùng" })}
+              {...register("username", { required: "Vui lòng nhập username" })}
               type="text"
               placeholder="nguyenvana"
               className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none focus:border-blue-400"
             />
             {errors.username && <p className="text-xs text-red-500 mt-1">{errors.username.message}</p>}
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-600 mb-1 block">Tên người dùng</label>
+            <input
+              {...register("fullName", { required: "Vui lòng nhập tên của bạn" })}
+              type="text"
+              placeholder="Nguyễn Văn A"
+              className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm outline-none focus:border-blue-400"
+            />
+            {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName.message}</p>}
           </div>
 
           <div>

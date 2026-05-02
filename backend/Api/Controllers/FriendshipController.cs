@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using InteractHub.Application.Common;
 using System.Security.Claims;
 using System.Linq;
+using InteractHub.Application.DTOs.User;
 
 namespace InteractHub.Api.Controllers;
 [ApiController]
@@ -39,6 +40,14 @@ public class FriendshipController : ControllerBase
     {
         var friends = await _friendshipService.Get10FriendsByReceiverId(ReceiverId, page);
         return Ok(friends);
+    }
+
+    [HttpGet("suggestion/{userId}/{page}")]
+    [Authorize]
+    public async Task<IActionResult> Get10SuggestionsByUserId(string userId, int page)
+    {
+        var suggestions = await _friendshipService.Get10SuggestionsByUserId(userId, page);
+        return Ok(suggestions);
     }
 
     [HttpPost]

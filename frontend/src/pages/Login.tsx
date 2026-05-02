@@ -31,9 +31,10 @@ function Login() {
 
       login(payload.accessToken, {
         id: payload.user.id,
-        username: payload.user.userName,
+        userName: payload.user.userName,
         email: payload.user.email,
         followersCount: 0,
+        fullName: payload.user.fullName,
       });
 
       navigate("/");

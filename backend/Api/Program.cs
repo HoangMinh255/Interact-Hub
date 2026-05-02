@@ -9,6 +9,11 @@ using InteractHub.Persistence.Extensions;
 using InteractHub.Persistence.Repositories;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using InteractHub.Application.Interfaces.Infrastructure;
+using InteractHub.Application.Interfaces.Repositories;
+using InteractHub.Application.Interfaces.Services;
+using InteractHub.Application.Services;
+using InteractHub.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +29,14 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<IdentitySeedOptions>(builder.Configuration.GetSection(IdentitySeedOptions.SectionName));
 builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection(CorsOptions.SectionName));
+builder.Services.Configure<BlobStorageOptions>(
+    builder.Configuration.GetSection(BlobStorageOptions.SectionName));
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+//  Azure Blob options
+builder.Services.Configure<BlobStorageOptions>(
+builder.Configuration.GetSection(BlobStorageOptions.SectionName));
 
 // Đăng ký tầng Application (Services)
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -33,7 +44,12 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IFriendshipService, FriendshipService>();
-
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IStoryService, StoryService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // Đăng ký tầng Application (Repositories)
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -41,6 +57,12 @@ builder.Services.AddScoped<IPostMediaRepository, PostMediaRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+builder.Services.AddScoped<IStoryRepository, StoryRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -85,7 +107,6 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://localhost:5174",
                 "http://localhost:5226")
             .AllowAnyHeader()
             .AllowAnyMethod()

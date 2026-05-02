@@ -2,6 +2,8 @@ using InteractHub.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using InteractHub.Application.DTOs.Friendship;
+using InteractHub.Application.DTOs.User;
+using InteractHub.Application.Common;
 using InteractHub.Application.Interfaces.Services;
 using InteractHub.Application.Interfaces.Repositories;
 
@@ -25,6 +27,10 @@ public class FriendshipService : IFriendshipService
     public async Task<IList<FriendDto>> Get10FriendsByReceiverId(string ReceiverId, int page)
     {
         return await _friendshipRepository.Get10FriendsByReceiverId(ReceiverId, page);
+    }
+    public async Task<PagedResult<UserSummaryDto>> Get10SuggestionsByUserId(string userId, int page)
+    {
+        return await _friendshipRepository.Get10SuggestionsByUserId(userId, page);
     }
     public async Task<Friendship> CreateFriendRequest(CreateFriendRequestDto createFriendRequestDto)
     {
