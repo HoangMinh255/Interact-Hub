@@ -9,6 +9,11 @@ using InteractHub.Persistence.Extensions;
 using InteractHub.Persistence.Repositories;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using InteractHub.Application.Interfaces.Infrastructure;
+using InteractHub.Application.Interfaces.Repositories;
+using InteractHub.Application.Interfaces.Services;
+using InteractHub.Application.Services;
+using InteractHub.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +46,10 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IFriendshipService, FriendshipService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IStoryService, StoryService>();
-
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 // Đăng ký tầng Application (Repositories)
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -50,6 +58,10 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 builder.Services.AddScoped<IStoryRepository, StoryRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 
 

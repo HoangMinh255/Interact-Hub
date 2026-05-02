@@ -51,3 +51,24 @@ dotnet add Application package Azure.Storage.Blobs
 - Controller is thin and delegates business rules to `IStoryService`.
 - Blob upload is isolated in `IFileStorageService`.
 - Response success paths are wrapped with `ApiResponse.Ok(...)` to match the existing AuthController style.
+
+## --------------------Thêm ReportService , UserService-------
+
+## Những gì đã có trong source
+- `ReportService`
+  - tạo report
+  - xem report của tôi
+  - xem pending report
+  - review / resolve report
+  - tạo notification cho reporter và chủ post
+
+- `UserService`
+  - lấy user by id / email / username
+  - search user với pagination
+  - update profile
+  - upload avatar lên Azure Blob
+  - deactivate / reactivate user
+
+- Controller đi kèm
+  - `ReportsController`
+  - `UsersController`
