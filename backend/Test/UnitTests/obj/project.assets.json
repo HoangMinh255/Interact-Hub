@@ -5508,11 +5508,16 @@
     ]
   },
   "packageFolders": {
+<<<<<<< HEAD
     "C:\\Users\\hp\\.nuget\\packages\\": {}
+=======
+    "C:\\Users\\ASUS\\.nuget\\packages\\": {}
+>>>>>>> origin/feature/add-report-user-api
   },
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< HEAD
       "projectUniqueName": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Test\\UnitTests\\UnitTests.csproj",
       "projectName": "UnitTests",
       "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Test\\UnitTests\\UnitTests.csproj",
@@ -5521,6 +5526,16 @@
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
+=======
+      "projectUniqueName": "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\UnitTests\\UnitTests.csproj",
+      "projectName": "UnitTests",
+      "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\UnitTests\\UnitTests.csproj",
+      "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+      "outputPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\UnitTests\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
+>>>>>>> origin/feature/add-report-user-api
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -5597,7 +5612,11 @@
             "privateAssets": "all"
           }
         },
+<<<<<<< HEAD
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
+=======
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+>>>>>>> origin/feature/add-report-user-api
       }
     }
   }

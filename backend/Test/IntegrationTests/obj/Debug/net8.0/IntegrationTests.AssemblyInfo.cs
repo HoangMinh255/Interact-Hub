@@ -14,10 +14,14 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 <<<<<<< HEAD
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+894907e1c13227a6012df7a0ae8ae49ba07c6c5e")]
 =======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1303b1dbf965dfbe90546fa2ccd9b7718412023d")]
 >>>>>>> origin/feature/frontend-mobile-friendly
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+44c9e97b767a387c16eef9093b36f78ef4992d8c")]
+>>>>>>> origin/feature/add-report-user-api
 [assembly: System.Reflection.AssemblyProductAttribute("IntegrationTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IntegrationTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

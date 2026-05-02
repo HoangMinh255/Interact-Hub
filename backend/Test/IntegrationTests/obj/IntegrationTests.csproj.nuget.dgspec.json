@@ -2,14 +2,19 @@
   "format": 1,
   "restore": {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj": {}
+=======
+    "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj": {}
+>>>>>>> origin/feature/add-report-user-api
   },
   "projects": {
-    "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj": {
+    "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
+        "projectUniqueName": "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
         "projectName": "IntegrationTests",
+<<<<<<< HEAD
         "projectPath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
         "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
         "outputPath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\obj\\",
@@ -29,6 +34,14 @@
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
+=======
+        "projectPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
+        "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
+        "outputPath": "D:\\2026\\01_05\\Interact-Hub\\backend\\Test\\IntegrationTests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config"
+>>>>>>> origin/feature/add-report-user-api
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -105,7 +118,11 @@
               "privateAssets": "all"
             }
           },
+<<<<<<< HEAD
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
+=======
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+>>>>>>> origin/feature/add-report-user-api
         }
       }
     }
