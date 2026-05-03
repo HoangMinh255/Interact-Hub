@@ -66,8 +66,7 @@ public sealed class StoryService : IStoryService
 
         if (dto.MediaUrl is not null)
             story.MediaUrl = dto.MediaUrl;
-
-        if (dto.MediaType is not null)
+            
             story.MediaType = dto.MediaType;
 
         if (dto.ExpireAt.HasValue)

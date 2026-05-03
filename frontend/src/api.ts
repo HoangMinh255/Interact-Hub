@@ -29,14 +29,20 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (email: string, password: string) =>
     api.post("/auth/login", { email, password }),
-  register: (userName: string, fullName: string, email: string, password: string) =>
-    api.post("/auth/register", { userName, fullName, email, password }),
+  register: (username: string, fullName: string, email: string, password: string) =>
+    api.post("/auth/register", { username, fullName, email, password }),
+  me: () => api.get("/auth/me"),
 };
 
 export const postsAPI = {
   getAll: () => api.get("/post"),
-  create: (content: string, media: { MediaUrl: string; MediaType: number }[] = []) => {
-    return api.post("/post", { Content: content, Visibility: 0, Media: media, Hashtags: null });
+  getByUser: (userId: string, page = 0) => api.get(`/post/user/${userId}/page/${page}`),
+  create: (
+    content: string,
+    visibility: number = 0,
+    media: { MediaUrl: string; MediaType: number }[] = []
+  ) => {
+    return api.post("/post", { Content: content, Visibility: visibility, Media: media, Hashtags: null });
   },
   like: (postId: string) => api.post(`/post/${postId}/like`),
   delete: (postId: string) => api.delete(`/post/${postId}`),
@@ -50,12 +56,34 @@ export const commentsAPI = {
 };
 
 export const usersAPI = {
-  getProfile: (userId: string) => api.get(`/users/${userId}`),
-  updateProfile: (data: object) => api.put("/users/profile", data),
+  getUser: () => api.get(`/users/me`),
+  getUserById: (userId: string) => api.get(`/users/${userId}`),
+  searchUsers: (keyword: string, page = 1, pageSize = 10) =>
+    api.get(`/users/search`, {
+      params: {
+        Keyword: keyword,
+        Page: page,
+        PageSize: pageSize,
+      },
+    }),
+  updateProfile: (fullname: string, bio: string) => api.put("/users/me", { FullName: fullname, Bio: bio }),
+  uploadAvatar: (avatarFile: File) => {
+    const formData = new FormData();
+    formData.append("AvatarFile", avatarFile);
+    return api.post("/users/me/avatar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+};
+
+export const storiesAPI = {
+  getMyStories: () => api.get("/stories/me"),
 };
 
 export const friendsAPI = {
-  getSuggestions: () => api.get("/friendship"), //get friend suggestions (?)
+  getSuggestions: (userId: string, page = 0) => api.get(`/friendship/suggestion/${userId}/${page}`),
   sendRequest: (requesterId: string, receiverId: string) => api.post("/friendship", { requesterId, receiverId }), 
   getRequest: (userId: string, page: number) => api.get(`/friendship/friendRequests/${userId}/${page}`),
   getFriendsList: (userId: string, page: number) => api.get(`/friendship/friends/${userId}/${page}`),

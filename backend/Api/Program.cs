@@ -51,7 +51,6 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
-
 // Đăng ký tầng Application (Repositories)
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IPostMediaRepository, PostMediaRepository>();
@@ -63,7 +62,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
-
 
 
 
@@ -109,7 +107,6 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:3000",
                 "http://localhost:5173",
-                "http://localhost:5174",
                 "http://localhost:5226")
             .AllowAnyHeader()
             .AllowAnyMethod()

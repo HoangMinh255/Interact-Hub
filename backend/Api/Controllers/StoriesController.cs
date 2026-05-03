@@ -102,11 +102,22 @@ public sealed class StoriesController : ControllerBase
             "stories",
             cancellationToken);
 
+            var mediaTypeByte = 0;
+
+            if (request.MediaFile.ContentType.StartsWith("image/"))
+            {
+                mediaTypeByte = 1; // Quy ước 1 là Ảnh
+            }
+            else if (request.MediaFile.ContentType.StartsWith("video/"))
+            {
+                mediaTypeByte = 2; // Quy ước 2 là Video
+            }
+
         var dto = new CreateStoryDto
         {
             Content = request.Content,
             MediaUrl = url,
-            MediaType = request.MediaFile.ContentType,
+            MediaType = (byte) mediaTypeByte,
             ExpireAt = request.ExpireAt
         };
 

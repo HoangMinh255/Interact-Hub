@@ -4,6 +4,8 @@ import type { Post } from "../types";
 
 type PostApiResponse = {
   id: string;
+  authorId?: string;
+  visibility?: number;
   content: string;
   createdAt: string;
   authorName?: string;
@@ -14,9 +16,10 @@ type PostApiResponse = {
 
 const mapPost = (post: PostApiResponse): Post => ({
   id: post.id,
-  visibility: 0,
+  visibility: post.visibility ?? 0,
   authorName: post.authorName ?? "Unknown",
   authorAvatar: post.authorAvatar ?? "",
+  author: post.authorId ? { id: post.authorId, fullName: post.authorName ?? "", userName: "", email: "", followersCount: 0 } : undefined,
   content: post.content,
   mediaUrls: post.mediaUrls??[],
   likesCount: 0,

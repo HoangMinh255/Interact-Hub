@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { commentsAPI } from "../api";
 import type { Post } from "../types";
 
@@ -14,6 +15,17 @@ interface PostCardProps {
   post: Post;
   onDelete?: () => void;
 }
+
+const getVisibilityLabel = (visibility: number) => {
+  switch (visibility) {
+    case 1:
+      return "Bạn bè";
+    case 2:
+      return "Chỉ mình tôi";
+    default:
+      return "Công khai";
+  }
+};
 
 function PostCard({ post, onDelete }: PostCardProps) {
   const [liked, setLiked] = useState(false);
@@ -61,21 +73,44 @@ function PostCard({ post, onDelete }: PostCardProps) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       <div className="flex items-center gap-3 mb-3">
-        {post.authorAvatar ? (
-          <img
-            src={post.authorAvatar}
-            alt={post.authorName || "Author avatar"}
-            className="w-9 h-9 rounded-full object-cover border border-gray-200"
-            referrerPolicy="no-referrer"
-          />
-        ) : (
-          <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
-            {(post.authorName || "U").charAt(0).toUpperCase()}
-          </div>
-        )}
+        {(() => {
+          const targetId = post.author?.id ?? (post as any).authorId ?? null;
+          const avatar = post.authorAvatar ?? "";
+          if (targetId) {
+            return (
+              <Link to={`/profile/${targetId}`} className="shrink-0">
+                {avatar ? (
+                  <img src={avatar} alt={post.authorName || "Author avatar"} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(post.authorName || "U").charAt(0).toUpperCase()}</div>
+                )}
+              </Link>
+            );
+          }
+
+          return avatar ? (
+            <img src={avatar} alt={post.authorName || "Author avatar"} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(post.authorName || "U").charAt(0).toUpperCase()}</div>
+          );
+        })()}
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-800">{post.authorName || "Unknown"}</p>
-          <p className="text-xs text-gray-400">{post.createdAt}</p>
+          {(() => {
+            const targetId = post.author?.id ?? (post as any).authorId ?? null;
+            const name = post.authorName || "Unknown";
+            if (targetId) {
+              return (
+                <Link to={`/profile/${targetId}`} className="text-sm font-medium text-gray-800 hover:underline">{name}</Link>
+              );
+            }
+            return <p className="text-sm font-medium text-gray-800">{name}</p>;
+          })()}
+          <div className="flex items-center gap-2 text-xs text-gray-400">
+            <span>{post.createdAt}</span>
+            <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
+              {getVisibilityLabel(post.visibility)}
+            </span>
+          </div>
         </div>
         {onDelete && (
           <button
@@ -90,9 +125,9 @@ function PostCard({ post, onDelete }: PostCardProps) {
       <p className="text-sm text-gray-700 mb-3">{post.content}</p>
 
       {post.mediaUrls && post.mediaUrls.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+        <div className="flex flex-col gap-2 mb-3">
           {post.mediaUrls.map((url, idx) => (
-            <img key={idx} src={url} alt="media" className="w-full rounded-lg object-cover max-h-64" />
+            <img key={idx} src={url} alt="media" className="block w-full h-auto rounded-lg" />
           ))}
         </div>
       )}

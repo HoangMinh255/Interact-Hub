@@ -1,9 +1,11 @@
 export interface User {
   id: string;
-  username: string;
+  fullName: string;
+  userName: string;
   email: string;
   avatarUrl?: string;
   followersCount: number;
+  bio?: string;
 }
 
 export interface Post {

@@ -2,7 +2,9 @@ using InteractHub.Domain.Entities;
 using InteractHub.Persistence.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
+using InteractHub.Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using InteractHub.Persistence.Seed;
 
 namespace InteractHub.Api.Extensions;
 
@@ -16,29 +18,14 @@ public static class SeedingExtensions
         var context = services.GetRequiredService<AppDbContext>();
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var seedOptions = services.GetRequiredService<IOptions<IdentitySeedOptions>>();
 
-        try
-        {
-            await context.Database.MigrateAsync();
-        }
-        catch (SqlException ex) when (ex.Number == 2714)
-        {
-            // The dump already created the schema; continue startup without reapplying the initial migration.
-        }
+        await context.Database.MigrateAsync();
 
-        // ==========================================
-        // 0. CREATE ROLES IF THEY DON'T EXIST
-        // ==========================================
-        var roleNames = new[] { "Admin", "User" };
-        foreach (var roleName in roleNames)
-        {
-            if (!await roleManager.RoleExistsAsync(roleName))
-            {
-                await roleManager.CreateAsync(new IdentityRole(roleName));
-            }
-        }
+        // Ensure admin account exists (idempotent)
+        await IdentitySeeder.SeedAsync(userManager, roleManager, seedOptions);
 
-        // Chỉ chạy nếu Database chưa có User nào
+        // Chỉ chạy các seed mẫu nếu Database chưa có User nào
         if (!await userManager.Users.AnyAsync())
         {
             // ==========================================
@@ -52,11 +39,6 @@ public static class SeedingExtensions
             await userManager.CreateAsync(user1, "Pass123$");
             await userManager.CreateAsync(user2, "Pass123$");
             await userManager.CreateAsync(user3, "Pass123$");
-
-            // Assign User role to all seed users
-            await userManager.AddToRoleAsync(user1, "User");
-            await userManager.AddToRoleAsync(user2, "User");
-            await userManager.AddToRoleAsync(user3, "User");
 
             // ==========================================
             // 2. TẠO BẠN BÈ (Friendships)

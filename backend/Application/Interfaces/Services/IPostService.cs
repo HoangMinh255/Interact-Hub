@@ -8,7 +8,7 @@ public interface IPostService
     Task<Post?> GetPostById(Guid id);
     Task<Post> CreatePost(string userId, CreatePostDto post);
     Task<bool> UpdatePostAsync(Guid postId, string userId, UpdatePostDto dto);
-    Task<IActionResult> DeletePost(Guid postId);
+    Task<IActionResult> DeletePost(Guid postId, string userId);
     Task<IList<Post>> Get10Posts(int page = 0);
     Task<IList<Post>> Get10PostsByUserId(string userId, int page = 0);
 }

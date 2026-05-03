@@ -11,7 +11,7 @@ public sealed class CreateStoryDto
     public string? MediaUrl { get; set; }
 
     [MaxLength(100)]
-    public string? MediaType { get; set; }
+    public byte MediaType { get; set; }
 
     /// <summary>
     /// Optional expiration time. If null, service will default to 24 hours from now (UTC).

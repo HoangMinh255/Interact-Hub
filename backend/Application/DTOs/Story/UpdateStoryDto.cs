@@ -11,7 +11,7 @@ public sealed class UpdateStoryDto
     public string? MediaUrl { get; set; }
 
     [MaxLength(100)]
-    public string? MediaType { get; set; }
+    public byte MediaType { get; set; }
 
     public bool? IsActive { get; set; }
 
