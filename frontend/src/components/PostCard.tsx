@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { commentsAPI } from "../api";
+import { commentsAPI, notificationsAPI } from "../api";
 import type { Post } from "../types";
+import { useAuth } from "../context/AuthContext";
 
 interface CommentItem {
   id: string;
@@ -28,6 +29,7 @@ const getVisibilityLabel = (visibility: number) => {
 };
 
 function PostCard({ post, onDelete }: PostCardProps) {
+  const { user } = useAuth();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const [showComment, setShowComment] = useState(false);
@@ -58,16 +60,38 @@ function PostCard({ post, onDelete }: PostCardProps) {
   const handleComment = async () => {
     if (!comment.trim()) return;
 
-    await commentsAPI.create(post.id, comment.trim());
+    try {
+      // Gọi API tạo bình luận
+      await commentsAPI.create(post.id, comment.trim());
 
-    const newComment: CommentItem = {
-      id: Date.now().toString(),
-      content: comment.trim(),
-      authorName: "Bạn",
-    };
+      // --- LOGIC GỬI THÔNG BÁO ---
+      const targetId = post.author?.id ?? (post as any).authorId ?? null;
+      
+      // Nếu có ID chủ bài viết VÀ người bình luận không phải là chủ bài viết
+      if (targetId && user?.id && targetId !== user.id) {
+        await notificationsAPI.create({
+          recipientId: targetId,         // Gửi cho chủ bài viết
+          actorId: user.id,              // Người thực hiện là bạn
+          type: 1,                       // Type 1: Bình luận
+          content: `${user.fullName || "Một người"} đã bình luận về bài viết của bạn.`,
+          relatedEntityType: "Post",     // Liên quan đến Bài viết
+          relatedEntityId: post.id,      // ID của bài viết
+          createdAt: new Date().toISOString()
+        });
+      }
+      // ---------------------------
 
-    setLocalComments((prev) => [...prev, newComment]);
-    setComment("");
+      const newComment: CommentItem = {
+        id: Date.now().toString(),
+        content: comment.trim(),
+        authorName: user?.fullName || "Bạn", // Lấy tên thật hiển thị cho đẹp
+      };
+
+      setLocalComments((prev) => [...prev, newComment]);
+      setComment("");
+    } catch (error) {
+      console.error("Lỗi khi bình luận:", error);
+    }
   };
 
   return (

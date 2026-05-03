@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
-import { storiesAPI, postsAPI, usersAPI } from "../api";
+import { storiesAPI, postsAPI, usersAPI, notificationsAPI } from "../api";
 import type { Post } from "../types";
 
 interface ProfileForm {
@@ -235,7 +235,22 @@ function Profile() {
                       try {
                         setFriendLoading(true);
                         await (await import("../api")).friendsAPI.sendRequest(authUser.id, profileUserId);
+                        
+                        // Tạo thông báo gửi cho người kia
+                        const notificationData = {
+                          recipientId: profileUserId, // Người nhận là chủ của Profile này
+                          actorId: authUser.id,       // Người thực hiện (người đang đăng nhập)
+                          type: 2,                    // Quy ước Type 2 là Lời mời kết bạn
+                          content: `${authUser.fullName} đã gửi cho bạn một lời mời kết bạn.`,
+                          relatedEntityType: "User",  
+                          relatedEntityId: authUser.id,
+                          createdAt: new Date().toISOString()
+                        };
+
+                        await (await import("../api")).notificationsAPI.create(notificationData);
+
                         setFriendRequestSent(true);
+                        
                       } catch (err) {
                         console.error("Failed to send friend request", err);
                       } finally {

@@ -2,7 +2,7 @@ import Sidebar from "../components/layout/Sidebar";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { friendsAPI } from "../api";
+import { friendsAPI, notificationsAPI } from "../api";
 import Avatar from "../components/ui/avatar";
 
 const Friends = () => {
@@ -44,18 +44,46 @@ const Friends = () => {
     }
   };
 
-  const handleAccept = async (friendshipId: string) => {
+  // --- CẬP NHẬT: Thêm tham số targetId để biết sẽ gửi thông báo cho ai ---
+  const handleAccept = async (friendshipId: string, targetId: string) => {
+    if (!user?.id) return;
     try {
       await friendsAPI.acceptRequest(friendshipId);
+      
+      // GỬI THÔNG BÁO ĐỒNG Ý (Type: 3)
+      await notificationsAPI.create({
+        recipientId: targetId,
+        actorId: user.id,
+        type: 3,
+        content: `${user.fullName || "Một người"} đã chấp nhận lời mời kết bạn của bạn.`,
+        relatedEntityType: "User",
+        relatedEntityId: user.id,
+        createdAt: new Date().toISOString()
+      });
+
       await loadView(page);
     } catch (err) {
       console.error("Failed to accept request", err);
     }
   };
 
-  const handleReject = async (friendshipId: string) => {
+  // --- CẬP NHẬT: Thêm tham số targetId ---
+  const handleReject = async (friendshipId: string, targetId: string) => {
+    if (!user?.id) return;
     try {
       await friendsAPI.rejectRequest(friendshipId);
+
+      // GỬI THÔNG BÁO TỪ CHỐI (Type: 4)
+      await notificationsAPI.create({
+        recipientId: targetId,
+        actorId: user.id,
+        type: 4,
+        content: `${user.fullName || "Một người"} đã từ chối lời mời kết bạn của bạn.`,
+        relatedEntityType: "User",
+        relatedEntityId: user.id,
+        createdAt: new Date().toISOString()
+      });
+
       await loadView(page);
     } catch (err) {
       console.error("Failed to reject request", err);
@@ -67,6 +95,18 @@ const Friends = () => {
     try {
       setLoading(true);
       await friendsAPI.sendRequest(user.id, targetId);
+
+      // GỬI THÔNG BÁO GỬI LỜI MỜI (Type: 2)
+      await notificationsAPI.create({
+        recipientId: targetId,
+        actorId: user.id,
+        type: 2,
+        content: `${user.fullName || "Một người"} đã gửi cho bạn một lời mời kết bạn.`,
+        relatedEntityType: "User",
+        relatedEntityId: user.id,
+        createdAt: new Date().toISOString()
+      });
+
       await loadView(page);
     } catch (err) {
       console.error("Failed to send friend request", err);
@@ -75,11 +115,11 @@ const Friends = () => {
     }
   };
 
-  const handleRemoveFriend = async (targetId: string) => {
+  const handleRemoveFriend = async (friendshipId: string) => {
     if (!user?.id) return;
     try {
       setLoading(true);
-      await friendsAPI.removeFriend(targetId);
+      await friendsAPI.removeFriend(friendshipId);
       await loadView(page);
     } catch (err) {
       console.error("Failed to remove friend", err);
@@ -143,15 +183,16 @@ const Friends = () => {
                     <div className="flex flex-col sm:flex-row gap-2">
                       {view === "requests" && (
                         <>
-                          <button onClick={() => handleAccept(r.friendshipId)} className="px-4 py-1.5 bg-blue-500 text-white rounded">Chấp nhận</button>
-                          <button onClick={() => handleReject(r.friendshipId)} className="px-4 py-1.5 bg-gray-100 rounded">Từ chối</button>
+                          {/* CẬP NHẬT: Truyền thêm targetId vào hàm */}
+                          <button onClick={() => handleAccept(r.friendshipId, targetId)} className="px-4 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Chấp nhận</button>
+                          <button onClick={() => handleReject(r.friendshipId, targetId)} className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition">Từ chối</button>
                         </>
                       )}
                       {view === "suggestions" && (
-                        <button onClick={() => handleSendRequest(r.friendId ?? r.id)} className="px-4 py-1.5 bg-blue-500 text-white rounded">Kết bạn</button>
+                        <button onClick={() => handleSendRequest(targetId)} className="px-4 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Kết bạn</button>
                       )}
                       {view === "friends" && (
-                        <button onClick={() => handleRemoveFriend(r.friendId ?? r.id)} className="px-4 py-1.5 bg-gray-100 rounded">Bỏ bạn</button>
+                        <button onClick={() => handleRemoveFriend(r.friendshipId)} className="px-4 py-1.5 bg-gray-100 hover:bg-red-50 hover:text-red-500 text-gray-700 rounded transition">Bỏ bạn</button>
                       )}
                     </div>
                   </div>

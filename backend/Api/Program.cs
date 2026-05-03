@@ -3,6 +3,7 @@ using InteractHub.Application.Interfaces.Infrastructure;
 using InteractHub.Application.Interfaces.Services;
 using InteractHub.Application.Interfaces.Repositories;
 using InteractHub.Application.Services;
+using InteractHub.Api.Hubs;
 using InteractHub.Infrastructure.Auth;
 using InteractHub.Infrastructure.Options;
 using InteractHub.Persistence.Extensions;
@@ -43,11 +44,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationSender, InteractHub.Api.Services.SignalRNotificationSender>();
 builder.Services.AddScoped<IFriendshipService, FriendshipService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IStoryService, StoryService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 
@@ -60,14 +60,8 @@ builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 builder.Services.AddScoped<IStoryRepository, StoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
-// Thêm dịch vụ SignalR
 builder.Services.AddSignalR();
-
-// Map endpoint cho Hub
-app.MapHub<NotificationHub>("/notificationHub");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -133,6 +127,7 @@ if (app.Environment.IsDevelopment())
 await app.SeedIdentityAsync();
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseCors(CorsExtensions.ReactClientPolicyName);
 
@@ -140,5 +135,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

@@ -45,6 +45,17 @@ export const notificationsAPI = {
   // Lấy chi tiết 1 thông báo
   getById: (id: string) => api.get(`/notification/${id}`),
 
+  // Tạo thông báo mới
+  create: (data: {
+    recipientId: string;
+    actorId: string;
+    type: number;
+    content: string;
+    relatedEntityType: string;
+    relatedEntityId: string;
+    createdAt: string;
+  }) => api.post("/notification", data),
+
   // Đánh dấu thông báo đã đọc
   update: (id: string) => api.put(`/notification/${id}`),
 
@@ -108,7 +119,7 @@ export const friendsAPI = {
   acceptRequest: (requesterId: string) => api.put(`/friendship/accept/${requesterId}`),
   blockRequest: (userId: string, targetId: string) => api.put(`/friendship/block/${userId}/${targetId}`),
   rejectRequest: (requesterId: string) => api.delete(`/friendship/reject/${requesterId}`),
-  removeFriend: (targetId: string) => api.delete(`/friendship/${targetId}`),
+  removeFriend: (friendshipId: string) => api.delete(`/friendship/${friendshipId}`),
 };
 
 export default api;

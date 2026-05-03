@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-// 1. Import thêm notificationsAPI cùng với usersAPI
 import { usersAPI, notificationsAPI } from "../../api"; 
 
 import * as signalR from "@microsoft/signalr";
@@ -34,7 +33,7 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const { isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const allHashtags = [
@@ -83,13 +82,15 @@ const Navbar = () => {
 
   // --- LOGIC THÔNG BÁO (SIGNALR & API) ---
   useEffect(() => {
-    if (!isAuthenticated) return;
+    // Đảm bảo phải có user.id thì mới gọi API
+    if (!isAuthenticated || !user?.id) return;
 
-    // 2. Viết hàm lấy thông báo cũ bằng async/await giống Home.tsx
     const fetchNotifications = async () => {
       try {
-        const response = await notificationsAPI.getAll(); 
-        // Tuỳ thuộc vào cấu trúc trả về của API, thông thường sẽ là response.data
+        // Thay vì gọi getAll(), hãy gọi getByUser và truyền ID của user hiện tại vào (trang 0)
+        const response = await notificationsAPI.getByUser(user.id, 0); 
+        
+        // Backend của bạn trả về Ok(notifications), nên data thường nằm ngay trong response.data
         setNotifications(response.data || []);
       } catch (error: any) {
         console.error("Lỗi tải thông báo:", error.response?.data?.message || error.message);
@@ -101,15 +102,13 @@ const Navbar = () => {
     
     // Khởi tạo kết nối SignalR
     const connection = new signalR.HubConnectionBuilder()
-      // Thay bằng URL Backend thực tế của bạn
-      .withUrl("https://localhost:5226/notificationHub", {
-        // Lấy token từ nơi bạn lưu (localStorage, cookie, hoặc AuthContext)
+      .withUrl("http://localhost:5226/notificationHub", {
         accessTokenFactory: () => localStorage.getItem("token") || "" 
       })
       .withAutomaticReconnect()
       .build();
 
-    // Lắng nghe sự kiện từ Backend (Tên sự kiện phải khớp 100% với C# SendAsync)
+    // Lắng nghe sự kiện từ Backend
     connection.on("ReceiveNewNotification", (newNotif: Notification) => {
       // Cập nhật danh sách: đưa thông báo mới lên đầu
       setNotifications((prev) => [newNotif, ...prev]);
@@ -120,11 +119,10 @@ const Navbar = () => {
       .then(() => console.log("Đã kết nối SignalR Notification!"))
       .catch((err) => console.error("Lỗi kết nối SignalR: ", err));
 
-    // Cleanup khi component unmount
     return () => {
       connection.stop();
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.id]); // Thêm user?.id vào dependency array
 
   // Đếm số lượng chưa đọc mỗi khi mảng notifications thay đổi
   useEffect(() => {

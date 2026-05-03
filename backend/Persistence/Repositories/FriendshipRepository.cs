@@ -106,7 +106,7 @@ public class FriendshipRepository : IFriendshipRepository
     public async Task<bool> BlockFriend(string RequesterId, string ReceiverId)
     {
         var existingFriendRequest = await _context.Friendships.FirstOrDefaultAsync(f => f.RequesterId == RequesterId && f.ReceiverId == ReceiverId && f.IsDeleted == false );
-        if(existingFriendRequest == null && existingFriendRequest.IsBlocked == true)
+        if(existingFriendRequest == null || existingFriendRequest.IsBlocked == true)
         {
             return false;
         }
@@ -117,8 +117,8 @@ public class FriendshipRepository : IFriendshipRepository
     }
     public async Task<bool> AcceptFriendRequest(Guid id)
     {
-        var existingFriendRequest = await _context.Friendships.FirstOrDefaultAsync(f => f.Id == id && f.IsDeleted == false && f.Status == 0);
-        if(existingFriendRequest == null && existingFriendRequest.IsBlocked == true)
+        var existingFriendRequest = await _context.Friendships.FirstOrDefaultAsync(f => f.Id == id && f.Status == 0);
+        if(existingFriendRequest == null || existingFriendRequest.IsBlocked == true)
         {
             return false;
         }
@@ -130,8 +130,8 @@ public class FriendshipRepository : IFriendshipRepository
 
     public async Task<bool> RejectFriendRequest(Guid id)
     {
-        var existingFriendRequest = await _context.Friendships.FirstOrDefaultAsync(f => f.Id == id && f.IsDeleted == false && f.Status == 0);
-        if(existingFriendRequest == null && existingFriendRequest.IsBlocked == true)
+        var existingFriendRequest = await _context.Friendships.FirstOrDefaultAsync(f => f.Id == id && f.Status == 0);
+        if(existingFriendRequest == null || existingFriendRequest.IsBlocked == true)
         {
             return false;
         }
@@ -143,14 +143,12 @@ public class FriendshipRepository : IFriendshipRepository
 
     public async Task<bool> RemoveFriend(Guid id)
     {
-        var existingFriendRequest = await _context.Friendships.FirstOrDefaultAsync(f => f.Id == id && f.IsDeleted == false && f.Status == 1);
-        if(existingFriendRequest == null && existingFriendRequest.IsBlocked == true)
+        var existingFriendRequest = await _context.Friendships.FirstOrDefaultAsync(f => f.Id == id);
+        if(existingFriendRequest == null || existingFriendRequest.IsBlocked == true)
         {
             return false;
         }
-        existingFriendRequest.UpdatedAt = DateTime.UtcNow;
-        existingFriendRequest.Status = 0;
-        existingFriendRequest.IsDeleted = true;
+        _context.Friendships.Remove(existingFriendRequest);
         await SaveChanges();
         return true;
     }
