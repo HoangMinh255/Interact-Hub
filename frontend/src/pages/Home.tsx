@@ -8,27 +8,11 @@ import { postsAPI } from "../api";
 import type { Post } from "../types";
 import { useAuth } from "../context/AuthContext";
 
-const suggestions = [
-  { id: "1", name: "Nguyễn Văn An", followers: 5 },
-  { id: "2", name: "Trần Thị Bình", followers: 8 },
-  { id: "3", name: "Lê Hoàng Nam", followers: 3 },
-  { id: "4", name: "Phạm Thu Hà", followers: 6 },
-  { id: "5", name: "Võ Minh Tuấn", followers: 4 },
-];
-
-const hashtags = [
-  { tag: "#ReactJS", count: 1200 },
-  { tag: "#LapTrinh", count: 980 },
-  { tag: "#SaiGon", count: 754 },
-  { tag: "#CongNghe", count: 632 },
-];
-
 function Home() {
   const { posts: initialPosts, loading } = usePosts();
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState("");
   const [visibility, setVisibility] = useState(0);
-  const [followed, setFollowed] = useState<string[]>([]);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -114,24 +98,7 @@ function Home() {
       alert(`❌ Lỗi: ${errorMsg}`);
     }
   };
-
-  const toggleFollow = async (id: string) => {
-    try {
-      if (followed.includes(id)) {
-        // Unfollow - remove friend (would need friendship ID in real scenario)
-        setFollowed((prev) => prev.filter((f) => f !== id));
-      } else {
-        // Follow - send friend request
-        //await friendsAPI.toggleFollow(id);
-        setFollowed((prev) => [...prev, id]);
-      }
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || error.message || "Không thể theo dõi người này";
-      console.error("Follow error:", errorMsg);
-      alert(`❌ Lỗi: ${errorMsg}`);
-    }
-  };
-
+  
   const filteredPosts = activeTag
     ? posts.filter((p) => p.content.includes(activeTag))
     : posts;
@@ -152,21 +119,6 @@ function Home() {
               placeholder="Bạn đang nghĩ gì?"
               className="flex-1 h-9 bg-gray-100 rounded-full px-4 text-sm outline-none"
             />
-          </div>
-
-          <div className="ml-12 mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <label className="text-xs font-medium text-gray-500">
-              Quyền riêng tư
-            </label>
-            <select
-              value={visibility}
-              onChange={(e) => setVisibility(Number(e.target.value))}
-              className="h-9 rounded-full border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-blue-400"
-            >
-              <option value={0}>Công khai</option>
-              <option value={1}>Bạn bè</option>
-              <option value={2}>Chỉ mình tôi</option>
-            </select>
           </div>
 
           {selectedMedia.length > 0 && (
@@ -240,47 +192,6 @@ function Home() {
           <button onClick={() => navigate("/profile")} className="text-xs text-blue-500 hover:underline">
             Xem
           </button>
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          <p className="text-sm font-medium text-gray-800 px-4 pt-3 pb-2">Người bạn có thể biết</p>
-          {suggestions.map((s) => (
-            <div key={s.id} className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50">
-              <button onClick={() => navigate(`/profile/${s.id}`)} className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white text-xs font-medium">
-                {s.name.charAt(0)}
-              </button>
-              <div className="flex-1">
-                <button onClick={() => navigate(`/profile/${s.id}`)} className="text-xs font-medium text-gray-800 hover:text-blue-500 text-left">
-                  {s.name}
-                </button>
-                <p className="text-xs text-gray-400">{s.followers} người theo dõi</p>
-              </div>
-              <button
-                onClick={() => toggleFollow(s.id)}
-                className={`text-xs px-3 py-1 rounded-full border ${
-                  followed.includes(s.id)
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "border-blue-400 text-blue-400 hover:bg-blue-50"
-                }`}
-              >
-                {followed.includes(s.id) ? "Đang theo dõi" : "Theo dõi"}
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
-          <p className="text-sm font-medium text-gray-800 mb-2">Xu hướng cho bạn</p>
-          {hashtags.map((h) => (
-            <button
-              key={h.tag}
-              onClick={() => setActiveTag(activeTag === h.tag ? null : h.tag)}
-              className={`w-full text-left py-1.5 rounded px-1 hover:bg-gray-50 ${activeTag === h.tag ? "bg-blue-50" : ""}`}
-            >
-              <p className="text-xs font-medium text-blue-500">{h.tag}</p>
-              <p className="text-xs text-gray-400">{h.count.toLocaleString()} bài viết</p>
-            </button>
-          ))}
         </div>
       </aside>
     </div>

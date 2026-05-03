@@ -18,17 +18,6 @@ interface PostCardProps {
   onDelete?: () => void;
 }
 
-const getVisibilityLabel = (visibility: number) => {
-  switch (visibility) {
-    case 1:
-      return "Bạn bè";
-    case 2:
-      return "Chỉ mình tôi";
-    default:
-      return "Công khai";
-  }
-};
-
 function PostCard({ post, onDelete }: PostCardProps) {
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
@@ -69,7 +58,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
         const likeCount = likedRes.data?.data?.likeCount ?? countRes.data?.data?.likeCount ?? countRes.data;
         setLikes(Number(likeCount ?? 0));
       } catch {
-        // ignore errors and keep defaults
       }
     };
 
@@ -91,7 +79,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
         setLikes((prev) => prev + 1);
       }
     } catch (e) {
-      // Optional: show toast / error
       console.error("Like action failed", e);
     }
   };
@@ -130,7 +117,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       <div className="flex items-center gap-3 mb-3">
         {(() => {
-          // Use sharer's avatar if this is a shared post, otherwise use original author's avatar
           let avatar = post.isShared ? (post.sharedByAvatar ?? "") : (post.authorAvatar ?? "");
           let displayName = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
           let targetId = post.isShared 
@@ -183,9 +169,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
           })()}
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <span>{post.createdAt}</span>
-            <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
-              {getVisibilityLabel(post.visibility)}
-            </span>
           </div>
         </div>
         {onDelete && (
