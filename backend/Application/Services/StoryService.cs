@@ -39,7 +39,7 @@ public sealed class StoryService : IStoryService
             UserId = userId,
             Content = dto.Content?.Trim(),
             MediaUrl = dto.MediaUrl,
-            MediaType = dto.MediaType,
+            MediaType = (byte) dto.MediaType,
             ExpireAt = expireAt,
             IsActive = true
         };
@@ -66,8 +66,8 @@ public sealed class StoryService : IStoryService
 
         if (dto.MediaUrl is not null)
             story.MediaUrl = dto.MediaUrl;
-            
-            story.MediaType = dto.MediaType;
+
+            story.MediaType = (byte) dto.MediaType;
 
         if (dto.ExpireAt.HasValue)
         {

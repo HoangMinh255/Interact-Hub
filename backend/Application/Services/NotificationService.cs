@@ -3,14 +3,19 @@ using InteractHub.Domain.Entities;
 using InteractHub.Application.Interfaces.Repositories;
 using InteractHub.Application.Interfaces.Services;
 using InteractHub.Application.DTOs.Notification;
+using InteractHub.Api.Hubs;
+using Microsoft.AspNetCore.SignalR;
+
 namespace InteractHub.Application.Services;
 
 public class NotificationService : INotificationService
 {
     private readonly INotificationRepository _notificationRepository;
-    public NotificationService(INotificationRepository notificationRepository)
+    private readonly IHubContext<NotificationHub> _hubContext;
+    public NotificationService(INotificationRepository notificationRepository, IHubContext<NotificationHub> hubContext)
     {
         _notificationRepository = notificationRepository;
+        _hubContext = hubContext;
     }
     public async Task<IList<Notification>> GetAllNotifications()
     {
@@ -39,7 +44,12 @@ public class NotificationService : INotificationService
             CreatedAt = notification.CreatedAt,
             IsDeleted = false
         };
-        return await _notificationRepository.CreateNotification(notificationEntity);
+        var createdNotification = await _notificationRepository.CreateNotification(notificationEntity);
+
+        // Bắn thông báo Real-time bằng SignalR
+        await _hubContext.Clients.User(notification.RecipientId)
+            .SendAsync("ReceiveNewNotification", createdNotification);
+        return createdNotification;
     }
     public async Task<bool> UpdateNotification(Guid id)
     {

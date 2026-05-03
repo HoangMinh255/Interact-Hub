@@ -63,7 +63,11 @@ builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
+// Thêm dịch vụ SignalR
+builder.Services.AddSignalR();
 
+// Map endpoint cho Hub
+app.MapHub<NotificationHub>("/notificationHub");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
