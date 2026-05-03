@@ -130,8 +130,8 @@ const Navbar = () => {
     setUnreadCount(unread);
   }, [notifications]);
 
-  // 3. Sửa lại hàm này thành async để gọi API cập nhật trạng thái "Đã đọc"
-  const handleReadNotification = async (id: string) => {
+  // Sửa lại hàm này thành async để gọi API cập nhật trạng thái "Đã đọc"
+  const handleReadNotification = async (id: string, actorId: string) => {
     // Cập nhật state nội bộ trước (Optimistic UI - cho người dùng thấy phản hồi ngay)
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
@@ -141,6 +141,9 @@ const Navbar = () => {
       // Gọi API PUT để báo cho Backend cập nhật Database
       // Lưu ý: Đảm bảo trong file api.ts bạn có định nghĩa method update cho notifications
       await notificationsAPI.update(id); 
+      if (actorId) {
+        navigate(`/profile/${actorId}`);
+      }
     } catch (error: any) {
       console.error("Lỗi đánh dấu đã đọc:", error.response?.data?.message || error.message);
       // Tùy chọn: Nếu lỗi, có thể hoàn tác lại trạng thái isRead = false tại đây
@@ -287,7 +290,7 @@ const Navbar = () => {
                         notifications.map((notif) => (
                           <button
                             key={notif.id}
-                            onClick={() => handleReadNotification(notif.id)}
+                            onClick={() => handleReadNotification(notif.id, notif.actorId || "")}
                             className={`w-full text-left px-4 py-3 flex gap-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 ${
                               !notif.isRead ? 'bg-blue-50/30' : ''
                             }`}
