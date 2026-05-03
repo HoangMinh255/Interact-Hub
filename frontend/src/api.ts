@@ -34,6 +34,24 @@ export const authAPI = {
   me: () => api.get("/auth/me"),
 };
 
+export const notificationsAPI = {
+  // Lấy tất cả thông báo của người dùng hiện tại (dựa vào JWT token)
+  getAll: () => api.get("/notification"),
+
+  // Lấy danh sách thông báo theo UserId có phân trang (dành cho trang xem tất cả thông báo)
+  getByUser: (userId: string, page = 0) => 
+    api.get(`/notification/user/${userId}/page/${page}`),
+
+  // Lấy chi tiết 1 thông báo
+  getById: (id: string) => api.get(`/notification/${id}`),
+
+  // Đánh dấu thông báo đã đọc
+  update: (id: string) => api.put(`/notification/${id}`),
+
+  // Xóa thông báo
+  delete: (id: string) => api.delete(`/notification/${id}`),
+};
+
 export const postsAPI = {
   getAll: () => api.get("/post"),
   getByUser: (userId: string, page = 0) => api.get(`/post/user/${userId}/page/${page}`),

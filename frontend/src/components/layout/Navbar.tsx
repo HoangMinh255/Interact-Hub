@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { usersAPI } from "../../api";
+// 1. Import thêm notificationsAPI cùng với usersAPI
+import { usersAPI, notificationsAPI } from "../../api"; 
+
+import * as signalR from "@microsoft/signalr";
 
 type SearchUser = {
   id: string;
@@ -11,12 +14,26 @@ type SearchUser = {
   bio?: string | null;
 };
 
+type Notification = {
+  id: string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+  actorId?: string;
+  recipientId?: string;
+};
+
 const Navbar = () => {
   const [search, setSearch] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [searchedUsers, setSearchedUsers] = useState<SearchUser[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  //Khai báo State cho Thông báo
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -27,6 +44,7 @@ const Navbar = () => {
     { tag: "#CongNghe", count: 632 },
   ];
 
+  // --- LOGIC TÌM KIẾM ---
   useEffect(() => {
     const keyword = search.trim();
 
@@ -62,6 +80,77 @@ const Navbar = () => {
       window.clearTimeout(timer);
     };
   }, [search]);
+
+  // --- LOGIC THÔNG BÁO (SIGNALR & API) ---
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    // 2. Viết hàm lấy thông báo cũ bằng async/await giống Home.tsx
+    const fetchNotifications = async () => {
+      try {
+        const response = await notificationsAPI.getAll(); 
+        // Tuỳ thuộc vào cấu trúc trả về của API, thông thường sẽ là response.data
+        setNotifications(response.data || []);
+      } catch (error: any) {
+        console.error("Lỗi tải thông báo:", error.response?.data?.message || error.message);
+      }
+    };
+
+    // Gọi hàm fetch
+    fetchNotifications();
+    
+    // Khởi tạo kết nối SignalR
+    const connection = new signalR.HubConnectionBuilder()
+      // Thay bằng URL Backend thực tế của bạn
+      .withUrl("https://localhost:5226/notificationHub", {
+        // Lấy token từ nơi bạn lưu (localStorage, cookie, hoặc AuthContext)
+        accessTokenFactory: () => localStorage.getItem("token") || "" 
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    // Lắng nghe sự kiện từ Backend (Tên sự kiện phải khớp 100% với C# SendAsync)
+    connection.on("ReceiveNewNotification", (newNotif: Notification) => {
+      // Cập nhật danh sách: đưa thông báo mới lên đầu
+      setNotifications((prev) => [newNotif, ...prev]);
+    });
+
+    // Bắt đầu kết nối
+    connection.start()
+      .then(() => console.log("Đã kết nối SignalR Notification!"))
+      .catch((err) => console.error("Lỗi kết nối SignalR: ", err));
+
+    // Cleanup khi component unmount
+    return () => {
+      connection.stop();
+    };
+  }, [isAuthenticated]);
+
+  // Đếm số lượng chưa đọc mỗi khi mảng notifications thay đổi
+  useEffect(() => {
+    const unread = notifications.filter((n) => !n.isRead).length;
+    setUnreadCount(unread);
+  }, [notifications]);
+
+  // 3. Sửa lại hàm này thành async để gọi API cập nhật trạng thái "Đã đọc"
+  const handleReadNotification = async (id: string) => {
+    // Cập nhật state nội bộ trước (Optimistic UI - cho người dùng thấy phản hồi ngay)
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    );
+    
+    try {
+      // Gọi API PUT để báo cho Backend cập nhật Database
+      // Lưu ý: Đảm bảo trong file api.ts bạn có định nghĩa method update cho notifications
+      await notificationsAPI.update(id); 
+    } catch (error: any) {
+      console.error("Lỗi đánh dấu đã đọc:", error.response?.data?.message || error.message);
+      // Tùy chọn: Nếu lỗi, có thể hoàn tác lại trạng thái isRead = false tại đây
+    }
+
+    // Đóng popup nếu cần hoặc điều hướng
+    setShowNotifications(false);
+  };
 
   const filteredUsers = searchedUsers;
 
@@ -171,11 +260,58 @@ const Navbar = () => {
 
           {isAuthenticated ? (
             <>
-              {/* Notification bell */}
-              <button className="relative w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
-                🔔
-                <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full text-white text-[9px] flex items-center justify-center">3</span>
-              </button>
+              {/* Vùng Thông báo */}
+              <div className="relative">
+                <button 
+                    className="relative w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+                    onClick={() => setShowNotifications((prev) => !prev)}
+                  >
+                    🔔
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                </button>
+
+                {/* Dropdown hiển thị danh sách Thông báo (Bạn nhớ bổ sung HTML phần này nếu lỡ xóa) */}
+                {showNotifications && (
+                  <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                      <h3 className="font-semibold text-gray-800">Thông báo</h3>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="px-4 py-8 text-center text-sm text-gray-500">
+                          Bạn chưa có thông báo nào.
+                        </div>
+                      ) : (
+                        notifications.map((notif) => (
+                          <button
+                            key={notif.id}
+                            onClick={() => handleReadNotification(notif.id)}
+                            className={`w-full text-left px-4 py-3 flex gap-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 ${
+                              !notif.isRead ? 'bg-blue-50/30' : ''
+                            }`}
+                          >
+                            <div className="w-10 h-10 shrink-0 rounded-full bg-blue-100 flex items-center justify-center text-xl">
+                              💡
+                            </div>
+                            <div className="flex-1">
+                              <p className={`text-sm text-gray-800 ${!notif.isRead ? 'font-semibold' : 'font-normal'}`}>
+                                {notif.content}
+                              </p>
+                            </div>
+                            {!notif.isRead && (
+                              <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+                            )}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Avatar */}
               <Link
