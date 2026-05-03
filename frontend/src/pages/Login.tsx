@@ -89,8 +89,7 @@ function Login() {
             <label className="text-sm text-gray-600 mb-1 block">Mật khẩu</label>
             <input
               {...register("password", {
-                required: "Vui lòng nhập mật khẩu",
-                minLength: { value: 6, message: "Mật khẩu tối thiểu 6 ký tự" }
+                required: "Vui lòng nhập mật khẩu"
               })}
               type="password"
               placeholder="••••••••"

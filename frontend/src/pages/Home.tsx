@@ -211,13 +211,16 @@ function Home() {
             Chưa có bài viết nào. Hãy đăng bài đầu tiên!
           </div>
         ) : (
-          filteredPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onDelete={() => handleDelete(post.id)}
-            />
-          ))
+          filteredPosts.map((post) => {
+            const isOwnPost = user?.id === (post.author?.id ?? (post as any).authorId);
+            return (
+              <PostCard
+                key={post.id}
+                post={post}
+                onDelete={isOwnPost ? () => handleDelete(post.id) : undefined}
+              />
+            );
+          })
         )}
       </main>
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { commentsAPI } from "../api";
+import { commentsAPI, reportsAPI, postsAPI } from "../api";
 import type { Post } from "../types";
+import ReportModal from "./ReportModal";
 
 interface CommentItem {
   id: string;
@@ -34,6 +35,8 @@ function PostCard({ post, onDelete }: PostCardProps) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [localComments, setLocalComments] = useState<CommentItem[]>([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (!showComment) return;
@@ -50,9 +53,45 @@ function PostCard({ post, onDelete }: PostCardProps) {
     void loadComments();
   }, [post.id, showComment]);
 
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikes(liked ? likes - 1 : likes + 1);
+  useEffect(() => {
+    let mounted = true;
+    const loadLikeState = async () => {
+      try {
+        const [likedRes, countRes] = await Promise.all([
+          postsAPI.isLiked(post.id),
+          postsAPI.getLikeCount(post.id),
+        ]);
+
+        if (!mounted) return;
+        setLiked(Boolean(likedRes.data?.data?.liked ?? likedRes.data?.liked ?? likedRes.data));
+        const likeCount = likedRes.data?.data?.likeCount ?? countRes.data?.data?.likeCount ?? countRes.data;
+        setLikes(Number(likeCount ?? 0));
+      } catch {
+        // ignore errors and keep defaults
+      }
+    };
+
+    void loadLikeState();
+    return () => {
+      mounted = false;
+    };
+  }, [post.id]);
+
+  const handleLike = async () => {
+    try {
+      if (liked) {
+        await postsAPI.unlike(post.id);
+        setLiked(false);
+        setLikes((prev) => Math.max(0, prev - 1));
+      } else {
+        await postsAPI.like(post.id);
+        setLiked(true);
+        setLikes((prev) => prev + 1);
+      }
+    } catch (e) {
+      // Optional: show toast / error
+      console.error("Like action failed", e);
+    }
   };
 
   const handleComment = async () => {
@@ -68,6 +107,17 @@ function PostCard({ post, onDelete }: PostCardProps) {
 
     setLocalComments((prev) => [...prev, newComment]);
     setComment("");
+  };
+
+  const handleReport = async (reason: string) => {
+    await reportsAPI.create(post.id, reason);
+  };
+
+  const handleConfirmDelete = () => {
+    setShowDeleteConfirm(false);
+    if (onDelete) {
+      onDelete();
+    }
   };
 
   return (
@@ -114,10 +164,19 @@ function PostCard({ post, onDelete }: PostCardProps) {
         </div>
         {onDelete && (
           <button
-            onClick={onDelete}
+            onClick={() => setShowDeleteConfirm(true)}
             className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50"
           >
-            🗑️ Xóa
+            🗑️
+          </button>
+        )}
+        {!onDelete && (
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="text-sm text-gray-500 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition-colors"
+            title="Báo cáo bài viết"
+          >
+            🚩
           </button>
         )}
       </div>
@@ -176,6 +235,36 @@ function PostCard({ post, onDelete }: PostCardProps) {
               className="flex-1 bg-gray-100 rounded-full px-3 text-sm outline-none h-8"
             />
             <button onClick={() => void handleComment()} className="text-blue-500 text-sm font-medium">Gửi</button>
+          </div>
+        </div>
+      )}
+
+      <ReportModal
+        postId={post.id}
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        onSubmit={handleReport}
+      />
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Xóa bài viết?</h3>
+            <p className="text-gray-600 mb-6">Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors"
+              >
+                Xóa bài viết
+              </button>
+            </div>
           </div>
         </div>
       )}

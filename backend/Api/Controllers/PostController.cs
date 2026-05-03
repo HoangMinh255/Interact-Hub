@@ -32,8 +32,8 @@ public class PostController : ControllerBase
             Content = p.Content,
             Visibility = p.Visibility,
             CreatedAt = p.CreatedAt,
-            AuthorId = p.UserId,
             // Lấy những chuỗi cần thiết từ User
+            AuthorId = p.UserId,
             AuthorName = p.User?.FullName, 
             AuthorAvatar = p.User?.AvatarUrl,
             // Lấy URL của danh sách ảnh
@@ -56,8 +56,8 @@ public class PostController : ControllerBase
             Content = p.Content,
             Visibility = p.Visibility,
             CreatedAt = p.CreatedAt,
-            AuthorId = p.UserId,
             // Lấy những chuỗi cần thiết từ User
+            AuthorId = p.UserId,
             AuthorName = p.User?.FullName, 
             AuthorAvatar = p.User?.AvatarUrl,
             // Lấy URL của danh sách ảnh
@@ -80,8 +80,8 @@ public class PostController : ControllerBase
             Content = p.Content,
             Visibility = p.Visibility,
             CreatedAt = p.CreatedAt,
-            AuthorId = p.UserId,
             // Lấy những chuỗi cần thiết từ User
+            AuthorId = p.UserId,
             AuthorName = p.User?.FullName, 
             AuthorAvatar = p.User?.AvatarUrl,
             // Lấy URL của danh sách ảnh
@@ -191,23 +191,23 @@ public class PostController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeletePost(Guid postId)
     {
-        try
-        {
+        try{
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Không thể xác thực danh tính người dùng." });
 
             var result = await _postService.DeletePost(postId, userId);
-            if (result is NotFoundResult)
-            {
-                return NotFound(new { message = "Không tìm thấy bài viết hoặc bạn không có quyền xóa bài viết này!" });
-            }
+            if (!result)
+                return NotFound(new { message = "Không tìm thấy bài viết hoặc bạn không có quyền xóa!" });
 
             return Ok(new { message = "Xóa bài viết thành công!" });
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             return StatusCode(500, new { message = "Đã xảy ra lỗi hệ thống: ", error = e.Message });
         }
+        
+        
     }
 
 

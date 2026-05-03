@@ -3,8 +3,6 @@ using InteractHub.Domain.Entities;
 using InteractHub.Application.Interfaces.Repositories;
 using InteractHub.Persistence.Data;
 using InteractHub.Application.DTOs.Friendship;
-using InteractHub.Application.DTOs.User;
-using InteractHub.Application.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography.X509Certificates;
 
@@ -51,48 +49,6 @@ public class FriendshipRepository : IFriendshipRepository
                                             FriendAvatar = f.RequesterId == ReceiverId ? f.Receiver.AvatarUrl : f.Requester.AvatarUrl
                                          })
                                          .ToListAsync();
-    }
-    public async Task<PagedResult<UserSummaryDto>> Get10SuggestionsByUserId(string userId, int page = 0)
-    {
-        page = Math.Max(page, 0);
-
-        var excludedUserIds = await _context.Friendships
-            .Where(f => !f.IsDeleted && (f.RequesterId == userId || f.ReceiverId == userId))
-            .Select(f => f.RequesterId == userId ? f.ReceiverId : f.RequesterId)
-            .Distinct()
-            .ToListAsync();
-
-        excludedUserIds.Add(userId);
-
-        var query = _context.Users
-            .AsNoTracking()
-            .Where(u => u.IsActive && !excludedUserIds.Contains(u.Id))
-            .OrderBy(u => u.FullName);
-
-        var totalItems = await query.LongCountAsync();
-
-        var items = await query
-            .Skip(page * 10)
-            .Take(10)
-            .Select(u => new UserSummaryDto
-            {
-                Id = u.Id,
-                UserName = u.UserName,
-                FullName = u.FullName,
-                AvatarUrl = u.AvatarUrl,
-                Bio = u.Bio,
-                IsActive = u.IsActive
-            })
-            .ToListAsync();
-
-        return new PagedResult<UserSummaryDto>
-        {
-            Items = items,
-            PageNumber = page,
-            PageSize = 10,
-            TotalItems = totalItems,
-            TotalPages = totalItems == 0 ? 0 : (int)Math.Ceiling(totalItems / 10.0)
-        };
     }
     public async Task<Friendship> CreateFriendRequest(Friendship friendship)
     {
@@ -153,6 +109,33 @@ public class FriendshipRepository : IFriendshipRepository
         existingFriendRequest.IsDeleted = true;
         await SaveChanges();
         return true;
+    }
+
+    public async Task<IList<FriendDto>> Get10SuggestionsByUserId(string userId, int page = 0)
+    {
+        // Get all users who are:
+        // - Not the current user
+        // - Not already friends with the current user
+        // - Do not have a pending friend request with the current user
+        // - Are not blocked
+        
+        var friendIds = await _context.Friendships
+            .Where(f => (f.RequesterId == userId || f.ReceiverId == userId) && f.IsBlocked == false && f.IsDeleted == false)
+            .Select(f => f.RequesterId == userId ? f.ReceiverId : f.RequesterId)
+            .ToListAsync();
+
+        return await _context.Users
+            .Where(u => u.Id != userId && !friendIds.Contains(u.Id))
+            .Skip(page * 10)
+            .Take(10)
+            .Select(u => new FriendDto
+            {
+                FriendshipId = Guid.Empty,
+                FriendId = u.Id,
+                FriendName = u.FullName,
+                FriendAvatar = u.AvatarUrl
+            })
+            .ToListAsync();
     }
 
     public async Task SaveChanges()

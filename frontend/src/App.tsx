@@ -6,9 +6,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/Settings";
-import Favorites from "./pages/Favorites";
+import Reports from "./pages/Reports";
 import BottomNav from "./components/layout/BottomNav";
 
 function App() {
@@ -24,8 +25,9 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<Profile />} />
             <Route path="/friends" element={<Friends />} />
-            <Route path="/settings" element={<Settings />} />
             <Route path="/favorites" element={<Favorites />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />

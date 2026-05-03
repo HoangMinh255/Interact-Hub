@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using InteractHub.Application.Common;
 using System.Security.Claims;
 using System.Linq;
-using InteractHub.Application.DTOs.User;
 
 namespace InteractHub.Api.Controllers;
 [ApiController]
