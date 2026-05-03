@@ -13,7 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IntegrationTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20ac5a1bdddd14e31e91c0265a9760f3589ccf6f")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c1651d37bbd589e7153d9bbbe5f9a0c0022a64ff")]
+>>>>>>> origin/feature/frontend-mobile-friendly
 [assembly: System.Reflection.AssemblyProductAttribute("IntegrationTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IntegrationTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

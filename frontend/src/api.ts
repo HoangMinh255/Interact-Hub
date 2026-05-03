@@ -18,9 +18,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only redirect to login if:
+    // 1. Status is 401 (Unauthorized)
+    // 2. NOT currently on login/register pages (don't redirect during login attempts)
+    // 3. User has a token (meaning they were authenticated but session expired)
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      const currentPath = window.location.pathname;
+      const isAuthPage = currentPath === "/login" || currentPath === "/register";
+      const hasToken = localStorage.getItem("token");
+
+      if (!isAuthPage && hasToken) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
@@ -66,6 +76,7 @@ export const notificationsAPI = {
 export const postsAPI = {
   getAll: () => api.get("/post"),
   getByUser: (userId: string, page = 0) => api.get(`/post/user/${userId}/page/${page}`),
+  getLiked: () => api.get("/posts/me/likes"),
   create: (
     content: string,
     visibility: number = 0,
@@ -73,7 +84,10 @@ export const postsAPI = {
   ) => {
     return api.post("/post", { Content: content, Visibility: visibility, Media: media, Hashtags: null });
   },
-  like: (postId: string) => api.post(`/post/${postId}/like`),
+  like: (postId: string) => api.post(`/posts/${postId}/likes`),
+  unlike: (postId: string) => api.delete(`/posts/${postId}/likes`),
+  isLiked: (postId: string) => api.get(`/posts/${postId}/likes/me`),
+  getLikeCount: (postId: string) => api.get(`/posts/${postId}/likes/count`),
   delete: (postId: string) => api.delete(`/post/${postId}`),
 };
 
@@ -120,6 +134,18 @@ export const friendsAPI = {
   blockRequest: (userId: string, targetId: string) => api.put(`/friendship/block/${userId}/${targetId}`),
   rejectRequest: (requesterId: string) => api.delete(`/friendship/reject/${requesterId}`),
   removeFriend: (friendshipId: string) => api.delete(`/friendship/${friendshipId}`),
+};
+
+export const reportsAPI = {
+  create: (postId: string, reason: string) =>
+    api.post("/reports", { PostId: postId, Reason: reason }),
+  getMyReports: (page = 1, pageSize = 10) =>
+    api.get("/reports/me", {
+      params: {
+        Page: page,
+        PageSize: pageSize,
+      },
+    }),
 };
 
 export default api;

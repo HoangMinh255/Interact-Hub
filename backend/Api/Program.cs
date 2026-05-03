@@ -50,6 +50,7 @@ builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IStoryService, StoryService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<ILikeService, LikeService>();
 
 // Đăng ký tầng Application (Repositories)
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -60,6 +61,7 @@ builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 builder.Services.AddScoped<IStoryRepository, StoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 
 builder.Services.AddSignalR();
 

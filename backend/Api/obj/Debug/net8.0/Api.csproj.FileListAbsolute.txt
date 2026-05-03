@@ -1,3 +1,11 @@
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.csproj.AssemblyReference.cache
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.GeneratedMSBuildEditorConfig.editorconfig
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.AssemblyInfoInputs.cache
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.AssemblyInfo.cs
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.csproj.CoreCompileInputs.cache
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.MvcApplicationPartsAssemblyInfo.cs
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.MvcApplicationPartsAssemblyInfo.cache
+D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.sourcelink.json
 D:\CSharp\InteractHub\backend\API\bin\Debug\net8.0\appsettings.Development.json
 D:\CSharp\InteractHub\backend\API\bin\Debug\net8.0\appsettings.json
 D:\CSharp\InteractHub\backend\API\bin\Debug\net8.0\appsettings.Production.json
@@ -140,14 +148,6 @@ D:\CSharp\InteractHub\backend\API\bin\Debug\net8.0\Application.pdb
 D:\CSharp\InteractHub\backend\API\bin\Debug\net8.0\Persistence.pdb
 D:\CSharp\InteractHub\backend\API\bin\Debug\net8.0\Domain.pdb
 D:\CSharp\InteractHub\backend\API\bin\Debug\net8.0\Infrastructure.pdb
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.csproj.AssemblyReference.cache
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.GeneratedMSBuildEditorConfig.editorconfig
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.AssemblyInfoInputs.cache
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.AssemblyInfo.cs
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.csproj.CoreCompileInputs.cache
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.MvcApplicationPartsAssemblyInfo.cs
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.MvcApplicationPartsAssemblyInfo.cache
-D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\Api.sourcelink.json
 D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\staticwebassets.build.json
 D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\staticwebassets.development.json
 D:\CSharp\InteractHub\backend\API\obj\Debug\net8.0\staticwebassets\msbuild.Api.Microsoft.AspNetCore.StaticWebAssets.props

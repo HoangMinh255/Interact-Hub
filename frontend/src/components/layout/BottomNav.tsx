@@ -21,11 +21,11 @@ const BottomNav = () => {
         <span className="text-lg">❤️</span>
         Yêu thích
       </NavLink>
-      <NavLink to="/profile" className={({ isActive }) =>
+      <NavLink to="/reports" className={({ isActive }) =>
         `flex-1 flex flex-col items-center py-2 text-xs ${isActive ? "text-blue-500" : "text-gray-500"}`
       }>
-        <span className="text-lg">👤</span>
-        Hồ sơ
+        <span className="text-lg">🚩</span>
+        Báo cáo
       </NavLink>
       <NavLink to="/settings" className={({ isActive }) =>
         `flex-1 flex flex-col items-center py-2 text-xs ${isActive ? "text-blue-500" : "text-gray-500"}`

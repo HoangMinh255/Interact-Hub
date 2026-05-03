@@ -2,9 +2,6 @@ using InteractHub.Domain.Entities;
 using InteractHub.Persistence.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using InteractHub.Infrastructure.Options;
-using Microsoft.Extensions.Options;
-using InteractHub.Persistence.Seed;
 
 namespace InteractHub.Api.Extensions;
 
@@ -17,15 +14,10 @@ public static class SeedingExtensions
         
         var context = services.GetRequiredService<AppDbContext>();
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        var seedOptions = services.GetRequiredService<IOptions<IdentitySeedOptions>>();
 
         await context.Database.MigrateAsync();
 
-        // Ensure admin account exists (idempotent)
-        await IdentitySeeder.SeedAsync(userManager, roleManager, seedOptions);
-
-        // Chỉ chạy các seed mẫu nếu Database chưa có User nào
+        // Chỉ chạy nếu Database chưa có User nào
         if (!await userManager.Users.AnyAsync())
         {
             // ==========================================

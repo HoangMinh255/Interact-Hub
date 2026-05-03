@@ -27,22 +27,28 @@ const Register = () => {
       await authAPI.register(data.username, data.fullName, data.email, data.password);
       navigate("/login");
     } catch (error: unknown) {
-      const maybeMessage =
-        typeof error === "object" &&
-        error !== null &&
-        "response" in error &&
-        typeof (error as { response?: { data?: { errors?: string[]; message?: string } } }).response?.data?.message === "string"
-          ? (error as { response?: { data?: { errors?: string[]; message?: string } } }).response?.data?.message
-          : null;
-
-      const maybeErrors =
-        typeof error === "object" &&
-        error !== null &&
-        "response" in error
-          ? (error as { response?: { data?: { errors?: string[] } } }).response?.data?.errors
-          : undefined;
-
-      setApiError(maybeErrors?.[0] ?? maybeMessage ?? "Đăng ký thất bại. Vui lòng thử lại.");
+      const errorData = (error as any)?.response?.data;
+      
+      let errorMessage = "Đăng ký thất bại. Vui lòng thử lại.";
+      
+      // Handle custom ApiResponse format (errors as array)
+      if (Array.isArray(errorData?.errors)) {
+        errorMessage = errorData.errors[0] ?? errorData.message ?? errorMessage;
+      }
+      // Handle ASP.NET Core ProblemDetails format (errors as object)
+      else if (typeof errorData?.errors === "object" && errorData?.errors !== null) {
+        const errorObj = errorData.errors as Record<string, string[]>;
+        const firstErrorField = Object.keys(errorObj)[0];
+        if (firstErrorField && Array.isArray(errorObj[firstErrorField])) {
+          errorMessage = errorObj[firstErrorField][0];
+        }
+      }
+      // Handle message field
+      else if (typeof errorData?.message === "string") {
+        errorMessage = errorData.message;
+      }
+      
+      setApiError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -100,8 +106,7 @@ const Register = () => {
             <label className="text-sm text-gray-600 mb-1 block">Mật khẩu</label>
             <input
               {...register("password", {
-                required: "Vui lòng nhập mật khẩu",
-                minLength: { value: 6, message: "Mật khẩu tối thiểu 6 ký tự" }
+                required: "Vui lòng nhập mật khẩu"
               })}
               type="password"
               placeholder="••••••••"
