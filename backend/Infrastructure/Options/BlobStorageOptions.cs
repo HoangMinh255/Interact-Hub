@@ -6,5 +6,7 @@ public sealed class BlobStorageOptions
 
     public string ConnectionString { get; set; } = string.Empty;
 
-    public string ContainerName { get; set; } = "stories";
+    public string ContainerName { get; set; } = "media";
+
+    public string LocalStoragePath { get; set; } = "uploads";
 }

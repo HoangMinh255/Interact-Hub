@@ -19,6 +19,12 @@ export interface Post {
   likesCount: number;
   commentCount: number;
   author?: User;
+  isShared?: boolean;
+  shareComment?: string;
+  sharedById?: string;
+  sharedByName?: string;
+  sharedByAvatar?: string | null;
+  originalPostId?: string;
 }
 
 export interface Notification {

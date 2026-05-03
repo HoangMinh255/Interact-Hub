@@ -227,16 +227,23 @@ namespace backend.src.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getutcdate()");
 
                     b.HasKey("PostId", "UserId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("PostId")
+                        .HasDatabaseName("IX_Likes_PostId");
 
-                    b.ToTable("Likes");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_Likes_UserId");
+
+                    b.ToTable("Likes", (string)null);
                 });
 
             modelBuilder.Entity("InteractHub.Domain.Entities.Notification", b =>
@@ -428,6 +435,38 @@ namespace backend.src.Persistence.Migrations
                     b.ToTable("PostReports");
                 });
 
+            modelBuilder.Entity("InteractHub.Domain.Entities.PostShare", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SharerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("PostShares");
+                });
+
             modelBuilder.Entity("InteractHub.Domain.Entities.Story", b =>
                 {
                     b.Property<Guid>("Id")
@@ -449,8 +488,8 @@ namespace backend.src.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<byte>("MediaType")
-                        .HasColumnType("tinyint");
+                    b.Property<string>("MediaType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MediaUrl")
                         .IsRequired()
@@ -664,7 +703,7 @@ namespace backend.src.Persistence.Migrations
                     b.HasOne("InteractHub.Domain.Entities.ApplicationUser", "User")
                         .WithMany("Likes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Post");
@@ -755,6 +794,17 @@ namespace backend.src.Persistence.Migrations
                     b.Navigation("Reporter");
 
                     b.Navigation("ReviewedBy");
+                });
+
+            modelBuilder.Entity("InteractHub.Domain.Entities.PostShare", b =>
+                {
+                    b.HasOne("InteractHub.Domain.Entities.Post", "Post")
+                        .WithMany("Shares")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("InteractHub.Domain.Entities.Story", b =>
@@ -859,6 +909,8 @@ namespace backend.src.Persistence.Migrations
                     b.Navigation("PostHashtags");
 
                     b.Navigation("Reports");
+
+                    b.Navigation("Shares");
                 });
 #pragma warning restore 612, 618
         }

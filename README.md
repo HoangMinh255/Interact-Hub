@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Required package
 
 This implementation uses Azure Blob SDK:
@@ -74,6 +75,8 @@ dotnet add Application package Azure.Storage.Blobs
   - `ReportsController`
   - `UsersController`
 =======
+=======
+>>>>>>> origin/feature/frontend-mobile-friendly
 backend:  
 đảm bảo admin account tồn tại  
 thêm GET /api/Friendship/suggestion/{userId}/{page} (10 item/page)  
@@ -98,4 +101,7 @@ chức năng liên quan đến media đang lỗi (do không kết nối azure bl
 known bug:  
 user không có role user   
 reject friend request ra lỗi 500
+<<<<<<< HEAD
+>>>>>>> origin/feature/frontend-mobile-friendly
+=======
 >>>>>>> origin/feature/frontend-mobile-friendly

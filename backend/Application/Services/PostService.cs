@@ -15,7 +15,7 @@ public class PostService : IPostService
         _postRepository = postRepository;  
     }
 
-    public async Task<IList<Post>> GetAllPosts()
+    public async Task<IList<PostFeedItemDto>> GetAllPosts()
     {
         return await _postRepository.GetAll();
     }
@@ -97,7 +97,35 @@ public class PostService : IPostService
     {
         return await _postRepository.DeletePost(postId, userId);
     }
-    public async Task<IList<Post>> Get10Posts(int page = 0)
+    public async Task<bool> SharePostAsync(string userId, Guid postId, string? comment)
+    {
+        // Validate post exists
+        var post = await _postRepository.GetPostById(postId);
+        if (post == null) return false;
+
+        var share = new PostShare
+        {
+            PostId = postId,
+            SharerId = userId,
+            Comment = string.IsNullOrWhiteSpace(comment) ? null : comment,
+            CreatedAt = DateTime.UtcNow,
+            IsDeleted = false
+        };
+
+        await _postRepository.CreateShareAsync(share);
+        return true;
+    }
+
+    public async Task<IList<PostShare>> GetSharesByPostIdAsync(Guid postId, int page = 0)
+    {
+        return await _postRepository.GetSharesByPostIdAsync(postId, page);
+    }
+
+    public async Task<IList<Post>> GetSharedPostsByUserId(string userId, int page = 0)
+    {
+        return await _postRepository.GetSharedPostsByUserIdAsync(userId, page);
+    }
+    public async Task<IList<PostFeedItemDto>> Get10Posts(int page = 0)
     {
         return await _postRepository.Get10Posts(page);
     }

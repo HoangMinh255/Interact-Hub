@@ -14,4 +14,5 @@ public class Post : BaseEntity
     public ICollection<Like> Likes { get; set; } = new List<Like>();
     public ICollection<PostReport> Reports { get; set; } = new List<PostReport>();
     public ICollection<PostHashtag> PostHashtags { get; set; } = new List<PostHashtag>();
+    public ICollection<PostShare> Shares { get; set; } = new List<PostShare>();
 }

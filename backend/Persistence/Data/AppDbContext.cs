@@ -20,6 +20,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Hashtag> Hashtags => Set<Hashtag>();
     public DbSet<PostHashtag> PostHashtags => Set<PostHashtag>();
     public DbSet<PostReport> PostReports => Set<PostReport>();
+    public DbSet<PostShare> PostShares => Set<PostShare>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

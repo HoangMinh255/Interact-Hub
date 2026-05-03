@@ -12,6 +12,12 @@ type PostApiResponse = {
   authorAvatar?: string;
   mediaUrls?: string[];
   commentCount?: number;
+  isShared?: boolean;
+  shareComment?: string;
+  sharedById?: string;
+  sharedByName?: string;
+  sharedByAvatar?: string | null;
+  originalPostId?: string;
 };
 
 const mapPost = (post: PostApiResponse): Post => ({
@@ -25,6 +31,12 @@ const mapPost = (post: PostApiResponse): Post => ({
   likesCount: 0,
   commentCount: post.commentCount ?? 0,
   createdAt: new Date(post.createdAt).toLocaleString("vi-VN"),
+  isShared: post.isShared ?? false,
+  shareComment: post.shareComment,
+  sharedById: post.sharedById,
+  sharedByName: post.sharedByName,
+  sharedByAvatar: post.sharedByAvatar ?? undefined,
+  originalPostId: post.originalPostId,
 });
 
 export const usePosts = () => {

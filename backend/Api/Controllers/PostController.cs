@@ -24,49 +24,14 @@ public class PostController : ControllerBase
     public async Task<IActionResult> GetAllPosts()
     {
         var posts = await _postService.GetAllPosts();
-
-        // Map sang Anonymous Object hoặc DTO để cắt đứt vòng lặp JSON
-        var result = posts.Select(p => new 
-        {
-            Id = p.Id,
-            Content = p.Content,
-            Visibility = p.Visibility,
-            CreatedAt = p.CreatedAt,
-            // Lấy những chuỗi cần thiết từ User
-            AuthorId = p.UserId,
-            AuthorName = p.User?.FullName, 
-            AuthorAvatar = p.User?.AvatarUrl,
-            // Lấy URL của danh sách ảnh
-            MediaUrls = p.Media?.Select(m => m.MediaUrl).ToList(),
-            // Đếm số lượng comment 
-            CommentCount = p.Comments?.Count ?? 0 
-        });
-
-        return Ok(result);
+        return Ok(posts);
     }
 
     [HttpGet("page/{page}")]
     public async Task<IActionResult> Get10Posts(int page = 0)
     {
         var posts = await _postService.Get10Posts(page);
-
-        var result = posts.Select(p => new 
-        {
-            Id = p.Id,
-            Content = p.Content,
-            Visibility = p.Visibility,
-            CreatedAt = p.CreatedAt,
-            // Lấy những chuỗi cần thiết từ User
-            AuthorId = p.UserId,
-            AuthorName = p.User?.FullName, 
-            AuthorAvatar = p.User?.AvatarUrl,
-            // Lấy URL của danh sách ảnh
-            MediaUrls = p.Media?.Select(m => m.MediaUrl).ToList(),
-            // Đếm số lượng comment 
-            CommentCount = p.Comments?.Count ?? 0 
-        });
-
-        return Ok(result);
+        return Ok(posts);
     }
 
     [HttpGet("user/{userId}/page/{page}")]
@@ -150,6 +115,52 @@ public class PostController : ControllerBase
             // Log lỗi ở đây nếu cần
             return StatusCode(500, new { message = "Đã xảy ra lỗi khi tạo bài viết.", error = ex.Message });
         }
+    }
+
+    [HttpPost("{postId}/share")]
+    [Authorize]
+    public async Task<IActionResult> SharePost(Guid postId, [FromBody] ShareDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var success = await _postService.SharePostAsync(userId, postId, dto?.Comment);
+        if (!success) return BadRequest(new { message = "Không thể chia sẻ bài viết." });
+
+        return Ok(new { message = "Chia sẻ bài viết thành công." });
+    }
+
+    [HttpGet("{postId}/shares")]
+    public async Task<IActionResult> GetSharesByPostId(Guid postId, int page = 0)
+    {
+        var shares = await _postService.GetSharesByPostIdAsync(postId, page);
+        var result = shares.Select(s => new {
+            Id = s.Id,
+            PostId = s.PostId,
+            SharerId = s.SharerId,
+            Comment = s.Comment,
+            CreatedAt = s.CreatedAt
+        });
+        return Ok(result);
+    }
+
+    [HttpGet("me/shares")]
+    [Authorize]
+    public async Task<IActionResult> GetMySharedPosts(int page = 0)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var posts = await _postService.GetSharedPostsByUserId(userId, page);
+        var result = posts.Select(p => new {
+            Id = p.Id,
+            Content = p.Content,
+            AuthorId = p.UserId,
+            AuthorName = p.User?.FullName,
+            MediaUrls = p.Media?.Select(m => m.MediaUrl).ToList(),
+            CreatedAt = p.CreatedAt
+        });
+        return Ok(result);
     }
 
 

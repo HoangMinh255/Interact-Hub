@@ -34,7 +34,7 @@ public class FriendshipRepository : IFriendshipRepository
                                          })
                                          .ToListAsync();
     }
-    public async Task<IList<FriendDto>> Get10FriendsByReceiverId(string ReceiverId, int page = 0)
+    public async Task<IList<FriendDto>> Get10FriendsByReceiverId(string ReceiverId, int page = 0)   
     {
         return await _context.Friendships.Where(f => (f.ReceiverId == ReceiverId || f.RequesterId == ReceiverId) && f.Status == 1 && f.IsBlocked == false)
                                          .Include(f => f.Requester)

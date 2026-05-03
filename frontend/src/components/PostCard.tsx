@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { commentsAPI, notificationsAPI } from "../api";
+// Đã tự động import thêm postsAPI và reportsAPI để hàm Share và Report chạy được
+import { commentsAPI, notificationsAPI, postsAPI, reportsAPI } from "../api";
 import type { Post } from "../types";
 import { useAuth } from "../context/AuthContext";
+import ReportModal from "./ReportModal";
+import ShareModal from "./ShareModal";
 
 interface CommentItem {
   id: string;
@@ -18,17 +21,6 @@ interface PostCardProps {
   onDelete?: () => void;
 }
 
-const getVisibilityLabel = (visibility: number) => {
-  switch (visibility) {
-    case 1:
-      return "Bạn bè";
-    case 2:
-      return "Chỉ mình tôi";
-    default:
-      return "Công khai";
-  }
-};
-
 function PostCard({ post, onDelete }: PostCardProps) {
   const { user } = useAuth(); 
   
@@ -42,6 +34,11 @@ function PostCard({ post, onDelete }: PostCardProps) {
 
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [localComments, setLocalComments] = useState<CommentItem[]>([]);
+  
+  // State của tính năng Mobile Friendly
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     if (!showComment) return;
@@ -74,6 +71,7 @@ function PostCard({ post, onDelete }: PostCardProps) {
     setLikes(liked ? likes - 1 : likes + 1);
   };
 
+  // Giữ lại hàm tạo bình luận thụt lề cao cấp của nhánh HEAD
   const submitComment = async (parentId: string | null = null) => {
     const textToSubmit = parentId ? replyText : comment;
     if (!textToSubmit.trim()) return;
@@ -118,47 +116,103 @@ function PostCard({ post, onDelete }: PostCardProps) {
   const allComments = [...comments, ...localComments];
   const topLevelComments = allComments.filter(c => !c.parentCommentId);
 
-  // Tính tổng số bình luận chuẩn nhất để không bị chớp "0"
+  // Tính tổng số bình luận chuẩn nhất
   const totalCommentsCount = Math.max((post.commentCount || 0) + localComments.length, allComments.length);
+
+  // --- KẾT HỢP CÁC HÀM XỬ LÝ MỚI TỪ NHÁNH MOBILE FRIENDLY ---
+  const handleReport = async (reason: string) => {
+    await reportsAPI.create(post.id, reason);
+  };
+
+  const handleShare = async (comment?: string) => {
+    await postsAPI.share(post.id, comment);
+  };
+
+  const handleConfirmDelete = () => {
+    setShowDeleteConfirm(false);
+    if (onDelete) {
+      onDelete();
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       {/* --- PHẦN ĐẦU BÀI VIẾT --- */}
       <div className="flex items-center gap-3 mb-3">
         {(() => {
-          const targetId = post.author?.id ?? (post as any).authorId ?? null;
-          const avatar = post.authorAvatar ?? "";
-          return (
-            <Link to={targetId ? `/profile/${targetId}` : "#"} className="shrink-0">
-              {avatar ? (
-                <img src={avatar} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(post.authorName || "U").charAt(0).toUpperCase()}</div>
-              )}
-            </Link>
+          // Logic render Avatar cho bài Shared
+          let avatar = post.isShared ? (post.sharedByAvatar ?? "") : (post.authorAvatar ?? "");
+          let displayName = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
+          let targetId = post.isShared 
+            ? (post.sharedById ?? null) 
+            : (post.author?.id ?? (post as any).authorId ?? null);
+
+          if (targetId) {
+            return (
+              <Link to={`/profile/${targetId}`} className="shrink-0">
+                {avatar ? (
+                  <img src={avatar} alt={displayName} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(displayName || "U").charAt(0).toUpperCase()}</div>
+                )}
+              </Link>
+            );
+          }
+
+          return avatar ? (
+            <img src={avatar} alt={displayName} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(displayName || "U").charAt(0).toUpperCase()}</div>
           );
         })()}
+        
         <div className="flex-1">
           {(() => {
-            const targetId = post.author?.id ?? (post as any).authorId ?? null;
-            const name = post.authorName || "Unknown";
-            return targetId 
-              ? <Link to={`/profile/${targetId}`} className="text-sm font-medium text-gray-800 hover:underline">{name}</Link>
-              : <p className="text-sm font-medium text-gray-800">{name}</p>;
+            // Logic render Tên cho bài Shared
+            let targetId = post.isShared 
+              ? (post.sharedById ?? null) 
+              : (post.author?.id ?? (post as any).authorId ?? null);
+            let name = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
+            
+            if (targetId) {
+              return (
+                <div>
+                  <Link to={`/profile/${targetId}`} className="text-sm font-medium text-gray-800 hover:underline">{name}</Link>
+                  {post.isShared && post.authorName && (
+                    <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.authorName}</span></div>
+                  )}
+                </div>
+              );
+            }
+            return (
+              <div>
+                <p className="text-sm font-medium text-gray-800">{name}</p>
+                {post.isShared && post.authorName && (
+                  <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.authorName}</span></div>
+                )}
+              </div>
+            );
           })()}
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <span>{post.createdAt}</span>
-            <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
-              {getVisibilityLabel(post.visibility)}
-            </span>
           </div>
         </div>
+        
         {onDelete && (
-          <button onClick={onDelete} className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50">
+          // Đã sửa lại gọi UI xác nhận thay vì xóa thẳng
+          <button onClick={() => setShowDeleteConfirm(true)} className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50">
             🗑️ Xóa
           </button>
         )}
       </div>
+
+      {post.isShared && post.shareComment && (
+        <div className="mb-3 pb-3 border-b border-gray-200">
+          <p className="text-sm text-gray-600 italic bg-blue-50 rounded-lg px-3 py-2 border-l-2 border-blue-400">
+            "{post.shareComment}"
+          </p>
+        </div>
+      )}
 
       <p className="text-sm text-gray-700 mb-3">{post.content}</p>
 
@@ -182,11 +236,10 @@ function PostCard({ post, onDelete }: PostCardProps) {
           onClick={() => setShowComment(!showComment)}
           className="flex-1 flex items-center justify-center gap-1 py-1.5 text-sm text-gray-500 hover:bg-gray-50 rounded-lg"
         >
-          {/* CẬP NHẬT: Dùng biến totalCommentsCount ở đây */}
           💬 {totalCommentsCount} Bình luận
         </button>
         <button
-          onClick={() => alert("Đã chia sẻ bài viết!")}
+          onClick={() => setShowShareModal(true)}
           className="flex-1 flex items-center justify-center gap-1 py-1.5 text-sm text-gray-500 hover:bg-gray-50 rounded-lg"
         >
           🔁 Chia sẻ
@@ -245,7 +298,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
                           </div>
                         )}
 
-                        {/* CẬP NHẬT: Thêm "phản hồi của..." và nút "Phản hồi" cho bình luận con */}
                         <div className="flex flex-col relative z-10">
                           <div className="bg-gray-50 border border-gray-100 rounded-2xl px-3 py-1.5 text-sm text-gray-800">
                             <span className="font-semibold block text-[12px]">
@@ -267,7 +319,7 @@ function PostCard({ post, onDelete }: PostCardProps) {
                       </div>
                     ))}
 
-                    {/* 3. Ô NHẬP PHẢN HỒI (Mở chung dưới cùng của nhánh cây) */}
+                    {/* 3. Ô NHẬP PHẢN HỒI */}
                     {isReplying && (
                       <div className="flex gap-2 relative items-center">
                         <div className="absolute -left-4 top-1/2 w-4 h-[2px] bg-gray-200"></div>
@@ -318,6 +370,44 @@ function PostCard({ post, onDelete }: PostCardProps) {
               className="flex-1 bg-gray-100 border border-gray-200 rounded-full px-4 text-sm outline-none h-9 focus:border-blue-400"
             />
             <button onClick={() => submitComment()} className="text-blue-500 text-sm font-medium px-2">Gửi</button>
+          </div>
+        </div>
+      )}
+
+      {/* --- CÁC MODAL HỖ TRỢ TỪ NHÁNH MOBILE FRIENDLY --- */}
+      <ReportModal
+        postId={post.id}
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        onSubmit={handleReport}
+      />
+
+      <ShareModal
+        postId={post.id}
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        onSubmit={handleShare}
+      />
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Xóa bài viết?</h3>
+            <p className="text-gray-600 mb-6">Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg font-medium transition-colors"
+              >
+                Xóa bài viết
+              </button>
+            </div>
           </div>
         </div>
       )}

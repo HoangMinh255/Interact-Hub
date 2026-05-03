@@ -10,6 +10,7 @@ using InteractHub.Persistence.Extensions;
 using InteractHub.Persistence.Repositories;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.FileProviders;
 using InteractHub.Application.Interfaces.Infrastructure;
 using InteractHub.Application.Interfaces.Repositories;
 using InteractHub.Application.Interfaces.Services;
@@ -126,12 +127,26 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
-
 await app.SeedIdentityAsync();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// 1. Khai báo đường dẫn
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
+
+// 2. BẮT BUỘC PHẢI CHẠY ĐOẠN TẠO THƯ MỤC NÀY TRƯỚC
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+
+// 3. SAU ĐÓ MỚI ĐƯỢC GỌI LỆNH NÀY (Vì PhysicalFileProvider cần thư mục phải có sẵn)
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
 
 app.UseCors(CorsExtensions.ReactClientPolicyName);
 
