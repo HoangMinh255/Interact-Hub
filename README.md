@@ -72,3 +72,8 @@ dotnet add Application package Azure.Storage.Blobs
 - Controller đi kèm
   - `ReportsController`
   - `UsersController`
+
+  ## --------------------Thêm LikeService-------
+
+  - POST	/api/posts/{postId}/likes	Toggle Like / Unlike
+ - GET	/api/posts/{postId}/likes/count	Lấy số lượng like
