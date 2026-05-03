@@ -1,5 +1,3 @@
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using InteractHub.Application.Interfaces.Services;
 using InteractHub.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
@@ -31,31 +29,40 @@ public sealed class FileStorageService : IFileStorageService
         if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentException("File name is required.", nameof(fileName));
         if (string.IsNullOrWhiteSpace(containerName)) containerName = _options.ContainerName;
 
-        if (string.IsNullOrWhiteSpace(_options.ConnectionString))
-            throw new InvalidOperationException("Azure Blob connection string is missing.");
-
-        var extension = Path.GetExtension(fileName);
-        var blobName = $"{Guid.NewGuid():N}{extension}";
-        var client = new BlobServiceClient(_options.ConnectionString);
-        var container = client.GetBlobContainerClient(containerName);
-
-        await container.CreateIfNotExistsAsync(PublicAccessType.Blob, cancellationToken: cancellationToken);
-
-        var blobClient = container.GetBlobClient(blobName);
-
-        var headers = new BlobHttpHeaders
+        try
         {
-            ContentType = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType
-        };
+            // Get base upload directory
+            var uploadDir = Path.Combine(_options.LocalStoragePath ?? "uploads", containerName);
+            
+            // Create directory if it doesn't exist
+            if (!Directory.Exists(uploadDir))
+            {
+                Directory.CreateDirectory(uploadDir);
+            }
 
-        _logger.LogInformation("Uploading blob {BlobName} to container {ContainerName}", blobName, containerName);
+            // Generate unique filename
+            var extension = Path.GetExtension(fileName);
+            var blobName = $"{Guid.NewGuid():N}{extension}";
+            var filePath = Path.Combine(uploadDir, blobName);
 
-        await blobClient.UploadAsync(content, new BlobUploadOptions
+            // Save file to disk
+            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                await content.CopyToAsync(fileStream, cancellationToken);
+            }
+
+            // Return relative URL (assuming /uploads path is served by the API)
+            var url = $"/uploads/{containerName}/{blobName}";
+
+            _logger.LogInformation("Uploaded file {BlobName} to {FilePath}", blobName, filePath);
+
+            return (blobName, url);
+        }
+        catch (Exception ex)
         {
-            HttpHeaders = headers
-        }, cancellationToken);
-
-        return (blobName, blobClient.Uri.ToString());
+            _logger.LogError(ex, "Error uploading file {FileName}", fileName);
+            throw;
+        }
     }
 
     public async Task DeleteAsync(
@@ -69,14 +76,21 @@ public sealed class FileStorageService : IFileStorageService
         if (string.IsNullOrWhiteSpace(containerName))
             containerName = _options.ContainerName;
 
-        if (string.IsNullOrWhiteSpace(_options.ConnectionString))
-            throw new InvalidOperationException("Azure Blob connection string is missing.");
+        try
+        {
+            var filePath = Path.Combine(_options.LocalStoragePath ?? "uploads", containerName, blobName);
 
-        var client = new BlobServiceClient(_options.ConnectionString);
-        var container = client.GetBlobContainerClient(containerName);
-        var blobClient = container.GetBlobClient(blobName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                _logger.LogInformation("Deleted file {FilePath}", filePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting file {BlobName}", blobName);
+        }
 
-        _logger.LogInformation("Deleting blob {BlobName} from container {ContainerName}", blobName, containerName);
-        await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+        await Task.CompletedTask;
     }
 }

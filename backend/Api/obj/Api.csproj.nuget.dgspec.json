@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj": {}
+    "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj": {
+    "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj",
+        "projectUniqueName": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj",
         "projectName": "Api",
-        "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj",
+        "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\Api.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\obj\\",
+        "outputPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -26,17 +26,17 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj"
               },
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj"
               },
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj"
               }
             }
           }
@@ -50,7 +50,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -108,6 +109,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -116,18 +135,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj": {
+    "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj",
+        "projectUniqueName": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj",
+        "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\obj\\",
+        "outputPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -142,11 +161,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj"
               },
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -160,7 +179,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -218,23 +238,37 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
+    "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj",
+        "projectUniqueName": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj",
+        "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\obj\\",
+        "outputPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -260,7 +294,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -314,23 +349,37 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
+    "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj",
+        "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\obj\\",
+        "outputPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -356,7 +405,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -410,23 +460,37 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj": {
+    "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj",
+        "projectUniqueName": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj",
         "projectName": "Persistence",
-        "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj",
+        "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\Persistence.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\obj\\",
+        "outputPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Persistence\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -441,11 +505,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Application\\Application.csproj"
               },
-              "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
-                "projectPath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj"
+              "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj": {
+                "projectPath": "c:\\Users\\hp\\Desktop\\csharp\\interact\\Interact-Hub\\backend\\Domain\\Domain.csproj"
               }
             }
           }
@@ -459,7 +523,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -513,12 +578,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.24, 8.0.24]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.311/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

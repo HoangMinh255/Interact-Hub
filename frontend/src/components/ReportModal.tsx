@@ -8,6 +8,7 @@ interface ReportModalProps {
 }
 
 function ReportModal({ postId, isOpen, onClose, onSubmit }: ReportModalProps) {
+  void postId;
   const [reason, setReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

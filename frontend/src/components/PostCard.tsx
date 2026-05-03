@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { commentsAPI, reportsAPI, postsAPI } from "../api";
 import type { Post } from "../types";
 import ReportModal from "./ReportModal";
+import ShareModal from "./ShareModal";
 
 interface CommentItem {
   id: string;
@@ -37,6 +38,7 @@ function PostCard({ post, onDelete }: PostCardProps) {
   const [localComments, setLocalComments] = useState<CommentItem[]>([]);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     if (!showComment) return;
@@ -113,6 +115,10 @@ function PostCard({ post, onDelete }: PostCardProps) {
     await reportsAPI.create(post.id, reason);
   };
 
+  const handleShare = async (comment?: string) => {
+    await postsAPI.share(post.id, comment);
+  };
+
   const handleConfirmDelete = () => {
     setShowDeleteConfirm(false);
     if (onDelete) {
@@ -124,36 +130,56 @@ function PostCard({ post, onDelete }: PostCardProps) {
     <div className="bg-white border border-gray-200 rounded-xl p-4">
       <div className="flex items-center gap-3 mb-3">
         {(() => {
-          const targetId = post.author?.id ?? (post as any).authorId ?? null;
-          const avatar = post.authorAvatar ?? "";
+          // Use sharer's avatar if this is a shared post, otherwise use original author's avatar
+          let avatar = post.isShared ? (post.sharedByAvatar ?? "") : (post.authorAvatar ?? "");
+          let displayName = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
+          let targetId = post.isShared 
+            ? (post.sharedById ?? null) 
+            : (post.author?.id ?? (post as any).authorId ?? null);
+
           if (targetId) {
             return (
               <Link to={`/profile/${targetId}`} className="shrink-0">
                 {avatar ? (
-                  <img src={avatar} alt={post.authorName || "Author avatar"} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
+                  <img src={avatar} alt={displayName} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(post.authorName || "U").charAt(0).toUpperCase()}</div>
+                  <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(displayName || "U").charAt(0).toUpperCase()}</div>
                 )}
               </Link>
             );
           }
 
           return avatar ? (
-            <img src={avatar} alt={post.authorName || "Author avatar"} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
+            <img src={avatar} alt={displayName} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
           ) : (
-            <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(post.authorName || "U").charAt(0).toUpperCase()}</div>
+            <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(displayName || "U").charAt(0).toUpperCase()}</div>
           );
         })()}
         <div className="flex-1">
           {(() => {
-            const targetId = post.author?.id ?? (post as any).authorId ?? null;
-            const name = post.authorName || "Unknown";
+            let targetId = post.isShared 
+              ? (post.sharedById ?? null) 
+              : (post.author?.id ?? (post as any).authorId ?? null);
+            let name = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
+            
             if (targetId) {
               return (
-                <Link to={`/profile/${targetId}`} className="text-sm font-medium text-gray-800 hover:underline">{name}</Link>
+                <div>
+                  <Link to={`/profile/${targetId}`} className="text-sm font-medium text-gray-800 hover:underline">{name}</Link>
+                  {post.isShared && post.authorName && (
+                    <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.authorName}</span></div>
+                  )}
+                </div>
               );
             }
-            return <p className="text-sm font-medium text-gray-800">{name}</p>;
+            return (
+              <div>
+                <p className="text-sm font-medium text-gray-800">{name}</p>
+                {post.isShared && post.authorName && (
+                  <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.authorName}</span></div>
+                )}
+              </div>
+            );
           })()}
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <span>{post.createdAt}</span>
@@ -181,6 +207,14 @@ function PostCard({ post, onDelete }: PostCardProps) {
         )}
       </div>
 
+      {post.isShared && post.shareComment && (
+        <div className="mb-3 pb-3 border-b border-gray-200">
+          <p className="text-sm text-gray-600 italic bg-blue-50 rounded-lg px-3 py-2 border-l-2 border-blue-400">
+            "{post.shareComment}"
+          </p>
+        </div>
+      )}
+
       <p className="text-sm text-gray-700 mb-3">{post.content}</p>
 
       {post.mediaUrls && post.mediaUrls.length > 0 && (
@@ -205,7 +239,7 @@ function PostCard({ post, onDelete }: PostCardProps) {
           💬 {(post.commentCount || 0) + localComments.length} Bình luận
         </button>
         <button
-          onClick={() => alert("Đã chia sẻ bài viết!")}
+          onClick={() => setShowShareModal(true)}
           className="flex-1 flex items-center justify-center gap-1 py-1.5 text-sm text-gray-500 hover:bg-gray-50 rounded-lg"
         >
           🔁 Chia sẻ
@@ -244,6 +278,13 @@ function PostCard({ post, onDelete }: PostCardProps) {
         isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
         onSubmit={handleReport}
+      />
+
+      <ShareModal
+        postId={post.id}
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        onSubmit={handleShare}
       />
 
       {showDeleteConfirm && (

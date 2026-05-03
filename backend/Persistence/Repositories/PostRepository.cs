@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using InteractHub.Domain.Entities;
 using InteractHub.Persistence.Data;
+using InteractHub.Application.DTOs.Post;
 using InteractHub.Application.Interfaces.Repositories;
 namespace InteractHub.Persistence.Repositories;
 public class PostRepository : IPostRepository
@@ -12,14 +13,9 @@ public class PostRepository : IPostRepository
     {
         _context=context;
     }
-    public async Task<IList<Post>> GetAll()
+    public async Task<IList<PostFeedItemDto>> GetAll()
     {
-        return await _context.Posts
-        .Include(p => p.User)       // Lấy kèm thông tin tác giả
-        .Include(p => p.Media)      // Lấy kèm hình ảnh/video của bài viết
-        .Include(p => p.Comments)   // Lấy kèm số lượng bình luận (nếu cần)
-        .OrderByDescending(p => p.CreatedAt) // Xếp bài mới nhất lên đầu
-        .ToListAsync();
+        return await GetFeedItemsAsync(null);
     }
     public async Task<Post?> GetPostById(Guid id)
     {
@@ -173,13 +169,9 @@ public class PostRepository : IPostRepository
         await SaveChanges();
         return true;        
     }
-    public async Task<IList<Post>> Get10Posts(int page = 0)
+    public async Task<IList<PostFeedItemDto>> Get10Posts(int page = 0)
     {
-        return await _context.Posts .Where(p => p.IsDeleted == false )
-                                    .Include(p => p.User)       // Lấy kèm thông tin tác giả
-                                    .Include(p => p.Media)      // Lấy kèm hình ảnh/video của bài viết
-                                    .Include(p => p.Comments)   // Lấy kèm số lượng bình luận (nếu cần)
-                                    .Skip(page*10).Take(10).ToListAsync();
+        return await GetFeedItemsAsync(page);
     }
     public async Task<IList<Post>> Get10PostsByUserId(string userId, int page = 0)
     {
@@ -189,6 +181,119 @@ public class PostRepository : IPostRepository
                                     .Include(p => p.Comments)
                                     .Skip(page*10).Take(10).ToListAsync();
     }
+    public async Task<PostShare> CreateShareAsync(PostShare share)
+    {
+        share.Id = Guid.NewGuid();
+        share.CreatedAt = DateTime.UtcNow;
+        await _context.PostShares.AddAsync(share);
+        await SaveChanges();
+        return share;
+    }
+
+    public async Task<IList<PostShare>> GetSharesByPostIdAsync(Guid postId, int page = 0)
+    {
+        return await _context.PostShares
+            .Where(s => s.PostId == postId)
+            .Include(s => s.Post)
+            .OrderByDescending(s => s.CreatedAt)
+            .Skip(page * 10)
+            .Take(10)
+            .ToListAsync();
+    }
+
+    public async Task<IList<Post>> GetSharedPostsByUserIdAsync(string userId, int page = 0)
+    {
+        return await _context.PostShares
+            .Where(s => s.SharerId == userId)
+            .Include(s => s.Post)
+                .ThenInclude(p => p.User)
+            .Include(s => s.Post)
+                .ThenInclude(p => p.Media)
+            .OrderByDescending(s => s.CreatedAt)
+            .Skip(page * 10)
+            .Take(10)
+            .Select(s => s.Post)
+            .ToListAsync();
+    }
+    private async Task<IList<PostFeedItemDto>> GetFeedItemsAsync(int? page)
+    {
+        var users = await _context.Users
+            .AsNoTracking()
+            .Select(u => new { u.Id, u.FullName, u.AvatarUrl })
+            .ToDictionaryAsync(u => u.Id, u => new { u.FullName, u.AvatarUrl });
+
+        var posts = await _context.Posts
+            .Where(p => !p.IsDeleted)
+            .Include(p => p.User)
+            .Include(p => p.Media)
+            .Include(p => p.Comments)
+            .Select(p => new PostFeedItemDto
+            {
+                Id = p.Id,
+                OriginalPostId = p.Id,
+                IsShared = false,
+                AuthorId = p.UserId,
+                AuthorName = p.User.FullName,
+                AuthorAvatar = p.User.AvatarUrl,
+                Content = p.Content,
+                Visibility = p.Visibility,
+                CreatedAt = p.CreatedAt,
+                MediaUrls = p.Media.Select(m => m.MediaUrl).ToList(),
+                CommentCount = p.Comments.Count
+            })
+            .ToListAsync();
+
+        var shareRows = await _context.PostShares
+            .Where(s => !s.IsDeleted && !s.Post.IsDeleted)
+            .Include(s => s.Post)
+                .ThenInclude(p => p.User)
+            .Include(s => s.Post)
+                .ThenInclude(p => p.Media)
+            .Include(s => s.Post)
+                .ThenInclude(p => p.Comments)
+            .OrderByDescending(s => s.CreatedAt)
+            .ToListAsync();
+
+        var shares = shareRows.Select(s =>
+        {
+            users.TryGetValue(s.SharerId, out var sharer);
+            return new PostFeedItemDto
+            {
+                Id = s.Id,
+                OriginalPostId = s.PostId,
+                IsShared = true,
+                ShareId = s.Id,
+                ShareComment = s.Comment,
+                SharedById = s.SharerId,
+                SharedByName = sharer?.FullName,
+                SharedByAvatar = sharer?.AvatarUrl,
+                AuthorId = s.Post.UserId,
+                AuthorName = s.Post.User?.FullName,
+                AuthorAvatar = s.Post.User?.AvatarUrl,
+                Content = s.Post.Content,
+                Visibility = s.Post.Visibility,
+                CreatedAt = s.CreatedAt,
+                MediaUrls = s.Post.Media.Select(m => m.MediaUrl).ToList(),
+                CommentCount = s.Post.Comments.Count
+            };
+        }).ToList();
+
+        var feedItems = posts
+            .Concat(shares)
+            .OrderByDescending(item => item.CreatedAt)
+            .ToList();
+
+        if (page.HasValue)
+        {
+            feedItems = feedItems
+                .Skip(page.Value * 10)
+                .Take(10)
+                .ToList();
+        }
+
+        return feedItems;
+    }
+
     public async Task SaveChanges()
     {
         await _context.SaveChangesAsync();

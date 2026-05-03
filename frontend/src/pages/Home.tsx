@@ -87,6 +87,12 @@ function Home() {
             likesCount: 0,
             commentCount: p.commentCount ?? 0,
             createdAt: new Date(p.createdAt).toLocaleString("vi-VN"),
+            isShared: p.isShared ?? false,
+            shareComment: p.shareComment,
+            sharedById: p.sharedById,
+            sharedByName: p.sharedByName,
+            sharedByAvatar: p.sharedByAvatar ?? undefined,
+            originalPostId: p.originalPostId,
           }))
         : [];
       setPosts(mappedPosts);

@@ -631,11 +631,6 @@ C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\Ap
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\Api.sourcelink.json
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets.development.json
-C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets\msbuild.Api.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets\msbuild.build.Api.props
-C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Api.props
-C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Api.props
-C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\scopedcss\bundle\Api.styles.css
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\Api.csproj.Up2Date
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\Api.dll
@@ -643,3 +638,10 @@ C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\re
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\Api.pdb
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\Api.genruntimeconfig.cache
 C:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\ref\Api.dll
+c:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\bin\Debug\net8.0\Api.staticwebassets.endpoints.json
+c:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\rpswa.dswa.cache.json
+c:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\rjimswa.dswa.cache.json
+c:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+c:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+c:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets.build.json.cache
+c:\Users\hp\Desktop\csharp\interact\Interact-Hub\backend\Api\obj\Debug\net8.0\staticwebassets.build.endpoints.json
