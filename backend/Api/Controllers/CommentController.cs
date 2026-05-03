@@ -37,7 +37,8 @@ public class CommentController : ControllerBase
             Content = c.Content,
             CreatedAt = c.CreatedAt,
             AuthorName = c.User?.FullName,
-            AuthorAvatar = c.User?.AvatarUrl
+            AuthorAvatar = c.User?.AvatarUrl,
+            ParentCommentId = c.ParentCommentId
         });
 
         // 3. Trả về list dữ liệu đã được làm sạch
@@ -57,7 +58,8 @@ public class CommentController : ControllerBase
             Content = c.Content,
             CreatedAt = c.CreatedAt,
             AuthorName = c.User?.FullName,
-            AuthorAvatar = c.User?.AvatarUrl
+            AuthorAvatar = c.User?.AvatarUrl,
+            ParentCommentId = c.ParentCommentId
         });
         return Ok(safeComments);
     }

@@ -126,6 +126,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+
+
 await app.SeedIdentityAsync();
 
 app.UseHttpsRedirection();
