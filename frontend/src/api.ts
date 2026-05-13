@@ -73,6 +73,11 @@ export const notificationsAPI = {
   delete: (id: string) => api.delete(`/notification/${id}`),
 };
 
+export const hashtagsApi = {
+  getAll: () => api.get("/hashtag"),
+  get5TrendingHashtags: () => api.get("/hashtag/trending")
+}
+
 export const postsAPI = {
   getAll: () => api.get("/post"),
   getByUser: (userId: string, page = 0) => api.get(`/post/user/${userId}/page/${page}`),

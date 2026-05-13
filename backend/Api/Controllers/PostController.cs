@@ -49,6 +49,7 @@ public class PostController : ControllerBase
             AuthorId = p.UserId,
             AuthorName = p.User?.FullName, 
             AuthorAvatar = p.User?.AvatarUrl,
+            Hashtag = p.PostHashtags,
             // Lấy URL của danh sách ảnh
             MediaUrls = p.Media?.Select(m => m.MediaUrl).ToList(),
             // Đếm số lượng comment 

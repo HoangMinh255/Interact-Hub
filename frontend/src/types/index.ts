@@ -8,6 +8,11 @@ export interface User {
   bio?: string;
 }
 
+export interface Hashtag {
+  tag: string;
+  count: number;
+}
+
 export interface Post {
   id: string;
   content: string;
@@ -25,6 +30,7 @@ export interface Post {
   sharedByName?: string;
   sharedByAvatar?: string | null;
   originalPostId?: string;
+  hashtag?: string[];
 }
 
 export interface Notification {

@@ -5536,22 +5536,19 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\API\\Api.csproj",
+      "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\api\\Api.csproj",
       "projectName": "Api",
-      "projectPath": "D:\\CSharp\\InteractHub\\backend\\API\\Api.csproj",
+      "projectPath": "D:\\CSharp\\InteractHub\\backend\\api\\Api.csproj",
       "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-      "outputPath": "D:\\CSharp\\InteractHub\\backend\\API\\obj\\",
+      "outputPath": "D:\\CSharp\\InteractHub\\backend\\api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -5648,16 +5645,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.420/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file D:\\CSharp\\InteractHub\\backend\\API\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  }
 }

@@ -5,8 +5,8 @@ import Sidebar from "../components/layout/Sidebar";
 import PostCard from "../components/PostCard";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
 import { usePosts } from "../hooks/usePosts";
-import { postsAPI } from "../api";
-import type { Post } from "../types";
+import { postsAPI, hashtagsApi } from "../api";
+import type { Hashtag, Post } from "../types";
 import { useAuth } from "../context/AuthContext";
 
 function Home() {
@@ -14,18 +14,40 @@ function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState("");
   const [visibility, setVisibility] = useState(0);
+  const [hashtags, setHashtags] =useState<Hashtag[]>([]);
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [selectedMedia, setSelectedMedia] = useState<Array<{url: string, type: number}>>([]);
   const { user } = useAuth();
 
+
   useEffect(() => {
     if (initialPosts.length > 0 && posts.length === 0) {
       setPosts(initialPosts);
     }
-  }, [initialPosts, posts.length]);
+    const loadHashtags = async () => {
+      try {
+        const response = await hashtagsApi.get5TrendingHashtags();
+        
+        // Bóc tách dữ liệu qua các lớp của Backend trả về
+        const hashtagArray = response.data?.data?.trendingHashtags || response.data?.trendingHashtags || [];
+        
+        // Đảm bảo chỉ set vào state nếu nó thực sự là một mảng
+        if (Array.isArray(hashtagArray)) {
+          setHashtags(hashtagArray);
+        } else {
+          setHashtags([]);
+        }
 
+      } catch (error : any){
+        const errorMsg = error.response?.data?.message || error.message || "Lấy dữ liệu hashtag thất bại!";
+        console.error("Hashtag load error:", errorMsg);
+      }
+    }
+    loadHashtags();
+    
+  }, [initialPosts, posts.length]);
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -60,6 +82,7 @@ function Home() {
       setSelectedMedia([]);
       // Reload posts to get fresh data with author info
       const freshResponse = await postsAPI.getAll();
+      console.log(freshResponse.data);
       const mappedPosts = Array.isArray(freshResponse.data)
         ? freshResponse.data.map((p: any) => ({
             id: p.id,
@@ -78,6 +101,7 @@ function Home() {
             sharedByName: p.sharedByName,
             sharedByAvatar: p.sharedByAvatar ?? undefined,
             originalPostId: p.originalPostId,
+            hashtag: p.hashtags || p.hashtag || [],
           }))
         : [];
       setPosts(mappedPosts);
@@ -101,7 +125,20 @@ function Home() {
   };
 
   const filteredPosts = activeTag
-    ? posts.filter((p) => p.content.includes(activeTag))
+    ? posts.filter((p: any) => {
+        // kiểm tra chính xác trong mảng hashtag
+        if (p.hashtag && p.hashtag.length > 0) {
+          const cleanActiveTag = activeTag.replace('#', '').toLowerCase();
+          const hasMatch = p.hashtag.some((t: string) => 
+            t.replace('#', '').toLowerCase() === cleanActiveTag
+          );
+          if (hasMatch) return true;
+        }
+        
+        // Tìm bằng Regex trong nội dung
+        const regex = new RegExp(`#${activeTag.replace('#', '')}(?![A-Za-z0-9_])`, 'i');
+        return regex.test(p.content);
+      })
     : posts;
 
   return (
@@ -177,6 +214,9 @@ function Home() {
                 key={post.id}
                 post={post}
                 onDelete={isOwnPost ? () => handleDelete(post.id) : undefined}
+                onHashtagClick={(tag) => {setActiveTag(tag);
+                                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}  
               />
             );
           })
@@ -193,6 +233,36 @@ function Home() {
           <button onClick={() => navigate("/profile")} className="text-xs text-blue-500 hover:underline">
             Xem
           </button>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <p className="text-sm font-medium text-gray-800 mb-2">Xu hướng cho bạn</p>
+          {hashtags && hashtags.length > 0 ? (
+            hashtags.map((h: any, index: number) => {
+              // Dùng || để chấp nhận cả chữ hoa lẫn chữ thường
+              const tagName = h.tag || h.Tag || "Unknown";
+              const postCount = h.count || h.Count || 0;
+
+              return (
+                <button
+                  key={index}
+                  onClick={() => setActiveTag(activeTag === tagName ? null : tagName)}
+                  className={`w-full text-left py-1.5 rounded px-1 hover:bg-gray-50 transition-colors ${
+                    activeTag === tagName ? "bg-blue-50 text-blue-700" : ""
+                  }`}
+                >
+                  <p className="text-xs font-medium text-blue-500">#{tagName}</p>
+                  <p className="text-xs text-gray-400">
+                    {postCount.toLocaleString()} bài viết
+                  </p>
+                </button>
+              );
+            })
+          ) : (
+            <div className="py-4 text-center">
+              <div className="animate-spin inline-block w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full mb-2"></div>
+              <p className="text-[10px] text-gray-400">Đang tìm xu hướng...</p>
+            </div>
+          )}
         </div>
       </aside>
     </div>

@@ -18,6 +18,7 @@ type PostApiResponse = {
   sharedByName?: string;
   sharedByAvatar?: string | null;
   originalPostId?: string;
+  hashtag?: string[];
 };
 
 const mapPost = (post: PostApiResponse): Post => ({
@@ -37,6 +38,7 @@ const mapPost = (post: PostApiResponse): Post => ({
   sharedByName: post.sharedByName,
   sharedByAvatar: post.sharedByAvatar ?? undefined,
   originalPostId: post.originalPostId,
+  hashtag: post.hashtag ?? [],
 });
 
 export const usePosts = () => {

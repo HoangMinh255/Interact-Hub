@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-// Đã tự động import thêm postsAPI và reportsAPI để hàm Share và Report chạy được
 import { commentsAPI, notificationsAPI, postsAPI, reportsAPI } from "../api";
 import type { Post } from "../types";
 import { useAuth } from "../context/AuthContext";
@@ -19,9 +19,10 @@ interface CommentItem {
 interface PostCardProps {
   post: Post;
   onDelete?: () => void;
+  onHashtagClick?: (tag: string) => void;
 }
 
-function PostCard({ post, onDelete }: PostCardProps) {
+function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
   const { user } = useAuth(); 
   
   const [liked, setLiked] = useState(false);
@@ -35,7 +36,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [localComments, setLocalComments] = useState<CommentItem[]>([]);
   
-  // State của tính năng Mobile Friendly
   const [showReportModal, setShowReportModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -71,7 +71,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
     setLikes(liked ? likes - 1 : likes + 1);
   };
 
-  // Giữ lại hàm tạo bình luận thụt lề cao cấp của nhánh HEAD
   const submitComment = async (parentId: string | null = null) => {
     const textToSubmit = parentId ? replyText : comment;
     if (!textToSubmit.trim()) return;
@@ -133,6 +132,30 @@ function PostCard({ post, onDelete }: PostCardProps) {
     if (onDelete) {
       onDelete();
     }
+  };
+
+  // Hàm tìm tất cả các chữ bắt đầu bằng # và biến chúng thành thẻ <span> màu xanh
+  const renderContentWithHashtags = (text?: string) => {
+    if (!text) return null;
+    
+    // Tách text bằng khoảng trắng hoặc xuống dòng, bắt các cụm có dấu #
+    const words = text.split(/(\s+)/);
+    
+    return words.map((word, index) => {
+      if (word.startsWith("#") && word.length > 1) {
+        return (
+          <span key={index} className="text-blue-500 hover:underline cursor-pointer font-medium" 
+                onClick={(e) => {e.stopPropagation();
+                                  if (onHashtagClick) {
+                                    onHashtagClick(word.replace('#', ''));
+                                  }
+                                }}>
+            {word}
+          </span>
+        );
+      }
+      return word;
+    });
   };
 
   return (
@@ -199,7 +222,6 @@ function PostCard({ post, onDelete }: PostCardProps) {
         </div>
         
         {onDelete && (
-          // Đã sửa lại gọi UI xác nhận thay vì xóa thẳng
           <button onClick={() => setShowDeleteConfirm(true)} className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50">
             🗑️ Xóa
           </button>
@@ -214,7 +236,9 @@ function PostCard({ post, onDelete }: PostCardProps) {
         </div>
       )}
 
-      <p className="text-sm text-gray-700 mb-3">{post.content}</p>
+      <p className="text-sm text-gray-700 mb-3 whitespace-pre-wrap">
+        {renderContentWithHashtags(post.content + post.hashtag?.map(tag => ` #${tag}`).join(""))}
+      </p>
 
       {post.mediaUrls && post.mediaUrls.length > 0 && (
         <div className="flex flex-col gap-2 mb-3">

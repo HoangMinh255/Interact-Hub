@@ -227,6 +227,7 @@ public class PostRepository : IPostRepository
             .Include(p => p.User)
             .Include(p => p.Media)
             .Include(p => p.Comments)
+            .Include(p => p.PostHashtags)
             .Select(p => new PostFeedItemDto
             {
                 Id = p.Id,
@@ -239,7 +240,8 @@ public class PostRepository : IPostRepository
                 Visibility = p.Visibility,
                 CreatedAt = p.CreatedAt,
                 MediaUrls = p.Media.Select(m => m.MediaUrl).ToList(),
-                CommentCount = p.Comments.Count
+                CommentCount = p.Comments.Count,
+                Hashtag = p.PostHashtags.Select(ph => ph.Hashtag.Name).ToList()
             })
             .ToListAsync();
 
@@ -251,6 +253,9 @@ public class PostRepository : IPostRepository
                 .ThenInclude(p => p.Media)
             .Include(s => s.Post)
                 .ThenInclude(p => p.Comments)
+            .Include(s => s.Post)                     
+                .ThenInclude(p => p.PostHashtags)     
+                    .ThenInclude(ph => ph.Hashtag)
             .OrderByDescending(s => s.CreatedAt)
             .ToListAsync();
 
@@ -274,7 +279,8 @@ public class PostRepository : IPostRepository
                 Visibility = s.Post.Visibility,
                 CreatedAt = s.CreatedAt,
                 MediaUrls = s.Post.Media.Select(m => m.MediaUrl).ToList(),
-                CommentCount = s.Post.Comments.Count
+                CommentCount = s.Post.Comments.Count,
+                Hashtag = s.Post.PostHashtags?.Select(ph => ph.Hashtag.Name).ToList() ?? new List<string>(),
             };
         }).ToList();
 

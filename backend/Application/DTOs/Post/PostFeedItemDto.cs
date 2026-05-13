@@ -18,4 +18,5 @@ public class PostFeedItemDto
     public DateTime CreatedAt { get; set; }
     public List<string>? MediaUrls { get; set; }
     public int CommentCount { get; set; }
+    public List<string>? Hashtag { get; set; }
 }

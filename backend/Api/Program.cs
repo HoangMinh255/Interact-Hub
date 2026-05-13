@@ -52,6 +52,7 @@ builder.Services.AddScoped<IStoryService, StoryService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
+builder.Services.AddScoped<IHashtagService, HashtagService>();
 
 // Đăng ký tầng Application (Repositories)
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -63,6 +64,7 @@ builder.Services.AddScoped<IStoryRepository, StoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+builder.Services.AddScoped<IHashtagRepository, HashtagRepository>();
 
 builder.Services.AddSignalR();
 
