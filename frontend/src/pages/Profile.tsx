@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
+import Avatar from "../components/ui/avatar";
 import { postsAPI, usersAPI, resolveMediaUrl } from "../api";
 import { IoCameraOutline } from "react-icons/io5";
 
@@ -178,13 +179,7 @@ function Profile() {
         <div className="px-6 pb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-10 mb-4">
             <div className="relative">
-              {avatar ? (
-                <img src={avatar} className="w-20 h-20 rounded-full object-cover border-4 border-white" />
-              ) : (
-                <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-medium border-4 border-white">
-                  {viewedUser?.userName.charAt(0).toUpperCase()}
-                </div>
-              )}
+              <Avatar name={fullName || (viewedUser?.userName ?? "U")} avatarUrl={avatar ?? viewedUser?.avatarUrl ?? null} size="xl" />
               {isOwnProfile && (
                 <>
                   <button
@@ -302,7 +297,18 @@ function Profile() {
         ) : (
           <div className="flex flex-col gap-4">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard
+                key={post.id}
+                post={post}
+                onDelete={async () => {
+                  try {
+                    await postsAPI.delete(post.id);
+                    setPosts((prev) => prev.filter((p) => p.id !== post.id));
+                  } catch (err) {
+                    console.error("Failed to delete post:", err);
+                  }
+                }}
+              />
             ))}
 
             {hasMorePosts && (

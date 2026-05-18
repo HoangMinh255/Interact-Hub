@@ -6,6 +6,7 @@ import type { Post } from "../types";
 import { useAuth } from "../context/AuthContext";
 import ReportModal from "./ReportModal";
 import ShareModal from "./ShareModal";
+import Avatar from "./ui/avatar";
 import { CiHeart, CiShare2 } from "react-icons/ci";
 import { FaRegComment} from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
@@ -45,6 +46,15 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content ?? "");
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [localContent, setLocalContent] = useState(post.content ?? "");
+
+  useEffect(() => {
+    setLocalContent(post.content ?? "");
+    setEditContent(post.content ?? "");
+  }, [post.content]);
 
   useEffect(() => {
     if (!showComment) return;
@@ -201,7 +211,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
       <div className="flex items-center gap-3 mb-3">
         {(() => {
           // Logic render Avatar cho bài Shared
-          let avatar = resolveMediaUrl(post.isShared ? (post.sharedByAvatar ?? "") : (post.authorAvatar ?? "")) ?? "";
+          const rawAvatar = post.isShared ? (post.sharedByAvatar ?? null) : (post.authorAvatar ?? null);
           let displayName = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
           let targetId = post.isShared 
             ? (post.sharedById ?? null) 
@@ -210,20 +220,12 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
           if (targetId) {
             return (
               <Link to={`/profile/${targetId}`} className="shrink-0">
-                {avatar ? (
-                  <img src={avatar} alt={displayName} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(displayName || "U").charAt(0).toUpperCase()}</div>
-                )}
+                <Avatar name={displayName} avatarUrl={rawAvatar} size="md" />
               </Link>
             );
           }
 
-          return avatar ? (
-            <img src={avatar} alt={displayName} className="w-9 h-9 rounded-full object-cover border border-gray-200" referrerPolicy="no-referrer" />
-          ) : (
-            <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">{(displayName || "U").charAt(0).toUpperCase()}</div>
-          );
+          return <Avatar name={displayName} avatarUrl={rawAvatar} size="md" />;
         })()}
         
         <div className="flex-1">
@@ -258,20 +260,36 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
           </div>
         </div>
         
-        {onDelete && (
-          <button onClick={() => setShowDeleteConfirm(true)} className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50">
-            <MdDeleteOutline /> Xóa
-          </button>
-        )}
-        {!onDelete && (
-          <button
-            onClick={() => setShowReportModal(true)}
-            className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50"
-            title="Báo cáo bài viết"
-          >          
-            <PiFlagPennantFill /> Báo cáo
-          </button>
-        )}
+        {(() => {
+          const originalAuthorId = post.author?.id ?? (post as any).authorId ?? null;
+          const isOriginalAuthor = user?.id === originalAuthorId;
+
+          return (
+            <>
+              {isOriginalAuthor && (
+                <button onClick={() => { setIsEditing(true); setEditContent(localContent); }} className="text-xs text-gray-600 px-2 py-1 rounded hover:bg-gray-50 mr-2">
+                  Sửa
+                </button>
+              )}
+
+              {onDelete && (
+                <button onClick={() => setShowDeleteConfirm(true)} className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 inline-flex items-center gap-1">
+                  <MdDeleteOutline />
+                  <span>Xóa</span>
+                </button>
+              )}
+              {!onDelete && (
+                <button
+                  onClick={() => setShowReportModal(true)}
+                  className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50"
+                  title="Báo cáo bài viết"
+                >
+                  <PiFlagPennantFill /> Báo cáo
+                </button>
+              )}
+            </>
+          );
+        })()}
       </div>
 
       {post.isShared && post.shareComment && (
@@ -282,9 +300,40 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
         </div>
       )}
 
-      <p className="text-sm text-gray-700 mb-3 whitespace-pre-wrap">
-        {renderContentWithHashtags(post.content + (post.hashtag?.map(tag => ` #${tag}`).join("") ?? ""))}
-      </p>
+      {isEditing ? (
+        <div className="mb-3">
+          <textarea
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+            className="w-full border border-gray-200 rounded-lg p-3 text-sm h-28 resize-none"
+          />
+          <div className="flex gap-2 justify-end mt-2">
+            <button onClick={() => { setIsEditing(false); setEditContent(localContent); }} className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Hủy</button>
+            <button
+              onClick={async () => {
+                try {
+                  setSavingEdit(true);
+                  await postsAPI.update(post.id, editContent);
+                  setLocalContent(editContent);
+                  setIsEditing(false);
+                } catch (err) {
+                  console.error("Failed to update post:", err);
+                } finally {
+                  setSavingEdit(false);
+                }
+              }}
+              disabled={savingEdit || !editContent.trim()}
+              className="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50"
+            >
+              {savingEdit ? "Đang lưu..." : "Lưu"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm text-gray-700 mb-3 whitespace-pre-wrap">
+          {renderContentWithHashtags((localContent ?? post.content) + (post.hashtag?.map(tag => ` #${tag}`).join("") ?? ""))}
+        </p>
+      )}
 
       {post.mediaUrls && post.mediaUrls.length > 0 && (
         <div className="flex flex-col gap-2 mb-3">
@@ -330,13 +379,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                 
                 {/* BÌNH LUẬN CHA */}
                 <div className="flex gap-2">
-                  {c.authorAvatar ? (
-                    <img src={resolveMediaUrl(c.authorAvatar) ?? undefined} className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-100 z-10" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs shrink-0 font-medium z-10">
-                      {(c.authorName ?? "U").charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                    <Avatar name={c.authorName ?? "Người dùng"} avatarUrl={c.authorAvatar ?? null} size="sm" />
                   
                   <div className="flex flex-col">
                     <div className="bg-gray-100 rounded-2xl px-3 py-2 text-sm text-gray-800">
@@ -362,13 +405,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                       <div key={reply.id} className="flex gap-2 relative">
                         <div className="absolute -left-4 top-[14px] w-4 h-[2px] bg-gray-200"></div>
                         
-                        {reply.authorAvatar ? (
-                          <img src={resolveMediaUrl(reply.authorAvatar) ?? undefined} className="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-100 relative z-10" />
-                        ) : (
-                          <div className="w-7 h-7 rounded-full bg-gray-400 flex items-center justify-center text-white text-[10px] shrink-0 font-medium relative z-10">
-                            {(reply.authorName ?? "U").charAt(0).toUpperCase()}
-                          </div>
-                        )}
+                        <Avatar name={reply.authorName ?? "Người dùng"} avatarUrl={reply.authorAvatar ?? null} size="sm" />
 
                         <div className="flex flex-col relative z-10">
                           <div className="bg-gray-50 border border-gray-100 rounded-2xl px-3 py-1.5 text-sm text-gray-800">
@@ -396,13 +433,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                       <div className="flex gap-2 relative items-center">
                         <div className="absolute -left-4 top-1/2 w-4 h-[2px] bg-gray-200"></div>
                         
-                        {user?.avatarUrl ? (
-                          <img src={resolveMediaUrl(user.avatarUrl) ?? undefined} className="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-100 relative z-10" />
-                        ) : (
-                          <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] shrink-0 font-medium relative z-10">
-                            {(user?.fullName ?? "U").charAt(0).toUpperCase()}
-                          </div>
-                        )}
+                        <Avatar name={user?.fullName ?? "Bạn"} avatarUrl={user?.avatarUrl ?? null} size="sm" />
 
                         <input
                           type="text"
@@ -425,13 +456,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
 
           {/* --- Ô NHẬP BÌNH LUẬN GỐC TỔNG --- */}
           <div className="flex gap-2 mt-4 pt-3 border-t border-gray-50 items-center">
-            {user?.avatarUrl ? (
-              <img src={resolveMediaUrl(user.avatarUrl) ?? undefined} className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-100" />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs shrink-0 font-medium">
-                {(user?.fullName ?? "U").charAt(0).toUpperCase()}
-              </div>
-            )}
+            <Avatar name={user?.fullName ?? "Bạn"} avatarUrl={user?.avatarUrl ?? null} size="sm" />
             
             <input
               type="text"

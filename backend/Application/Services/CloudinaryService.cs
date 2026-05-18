@@ -50,7 +50,6 @@ public class CloudinaryService : ICloudinaryService
         // Trả về link ảnh an toàn (HTTPS)
         return uploadResult.SecureUrl?.ToString();
     }
-
     public async Task<bool> DeleteMediaAsync(string publicId)
     {
         var deleteParams = new DeletionParams(publicId);

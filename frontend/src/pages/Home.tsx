@@ -9,6 +9,7 @@ import { postsAPI, hashtagsApi } from "../api";
 import type { Hashtag, Post } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { IoCameraOutline } from "react-icons/io5";
+import Avatar from "../components/ui/avatar";
 
 function Home() {
   const { posts: initialPosts, loading } = usePosts();
@@ -173,7 +174,7 @@ function Home() {
       <main className="flex-1 flex flex-col gap-3">
         <div className="bg-white border border-gray-200 rounded-xl p-3">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm">B</div>
+            <Avatar name={user?.fullName ?? "B"} avatarUrl={user?.avatarUrl ?? null} size="md" />
             <input
               type="text"
               value={newPost}
@@ -232,7 +233,9 @@ function Home() {
           </div>
         ) : (
           filteredPosts.map((post) => {
-            const isOwnPost = user?.id === (post.author?.id ?? (post as any).authorId);
+            const originalAuthorId = post.author?.id ?? (post as any).authorId;
+            const reposterId = post.sharedById ?? (post as any).sharedById ?? null;
+            const isOwnPost = user?.id === originalAuthorId || user?.id === reposterId;
             return (
               <PostCard
                 key={post.id}
@@ -249,7 +252,7 @@ function Home() {
 
       <aside className="hidden lg:flex w-60 flex-col gap-3">
         <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">B</div>
+          <Avatar name={user?.fullName ?? "B"} avatarUrl={user?.avatarUrl ?? null} size="md" />
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-800">{user?.fullName ?? "error"}</p>
             <p className="text-xs text-gray-400">@{user?.userName ?? "error"}</p>

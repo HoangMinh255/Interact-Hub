@@ -8483,11 +8483,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\api\\Api.csproj",
+      "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Api\\Api.csproj",
       "projectName": "Api",
-      "projectPath": "D:\\CSharp\\InteractHub\\backend\\api\\Api.csproj",
+      "projectPath": "D:\\CSharp\\InteractHub\\backend\\Api\\Api.csproj",
       "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-      "outputPath": "D:\\CSharp\\InteractHub\\backend\\api\\obj\\",
+      "outputPath": "D:\\CSharp\\InteractHub\\backend\\Api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config"

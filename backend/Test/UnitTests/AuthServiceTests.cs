@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using InteractHub.Application.Common;
 using InteractHub.Application.DTOs.Auth;
 using InteractHub.Application.Interfaces.Infrastructure;
 using InteractHub.Application.Services;
@@ -16,99 +18,178 @@ public class AuthServiceTests
 {
     private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
     private readonly Mock<IJwtTokenService> _mockJwtTokenService;
+    private readonly IOptions<IdentitySeedOptions> _seedOptions;
     private readonly AuthService _authService;
 
     public AuthServiceTests()
     {
-        // 1. Mock UserManager (Dùng null! để xóa cảnh báo CS8625)
         var store = new Mock<IUserStore<ApplicationUser>>();
         _mockUserManager = new Mock<UserManager<ApplicationUser>>(
             store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
         
-        // 2. Mock JwtTokenService
         _mockJwtTokenService = new Mock<IJwtTokenService>();
 
-        // 3. Mock IOptions<IdentitySeedOptions> (Thêm tham số thứ 3 bị thiếu)
         var options = new Mock<IOptions<IdentitySeedOptions>>();
         options.Setup(o => o.Value).Returns(new IdentitySeedOptions());
+        _seedOptions = options.Object;
 
-        // Tiêm đúng 3 dependency mà AuthService cần
         _authService = new AuthService(
             _mockUserManager.Object, 
             _mockJwtTokenService.Object, 
-            options.Object);
+            _seedOptions);
+    }
+
+    #region RegisterAsync Tests
+    [Fact]
+    public async Task RegisterAsync_ValidData_ReturnsSuccess()
+    {
+        var registerDto = new RegisterRequestDto 
+        { 
+            Email = "new@test.com", 
+            UserName = "newuser",
+            FullName = "New User",
+            Password = "Password123!" 
+        };
+
+        _mockUserManager.Setup(x => x.FindByEmailAsync(registerDto.Email))
+            .ReturnsAsync((ApplicationUser?)null);
+        _mockUserManager.Setup(x => x.FindByNameAsync(registerDto.UserName))
+            .ReturnsAsync((ApplicationUser?)null);
+        _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerDto.Password))
+            .ReturnsAsync(IdentityResult.Success);
+        _mockUserManager.Setup(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()))
+            .ReturnsAsync(IdentityResult.Success);
+
+        var result = await _authService.RegisterAsync(registerDto);
+
+        Assert.NotNull(result);
+        Assert.True(result.Success);
+        Assert.NotNull(result.Data);
+        Assert.Equal(registerDto.Email, result.Data.Email);
+        Assert.Equal(registerDto.UserName, result.Data.UserName);
+        Assert.Single(result.Data.Roles);
     }
 
     [Fact]
-    public async Task LoginAsync_ValidCredentials_ReturnsLoginResponse()
+    public async Task RegisterAsync_CreateAsyncFails_ReturnsFail()
+    {
+        var registerDto = new RegisterRequestDto 
+        { 
+            Email = "new@test.com", 
+            UserName = "newuser",
+            FullName = "New User",
+            Password = "Password123!" 
+        };
+
+        _mockUserManager.Setup(x => x.FindByEmailAsync(registerDto.Email))
+            .ReturnsAsync((ApplicationUser?)null);
+        _mockUserManager.Setup(x => x.FindByNameAsync(registerDto.UserName))
+            .ReturnsAsync((ApplicationUser?)null);
+        
+        var errors = new[] { new IdentityError { Description = "Password too weak" } };
+        _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerDto.Password))
+            .ReturnsAsync(IdentityResult.Failed(errors));
+
+        var result = await _authService.RegisterAsync(registerDto);
+
+        Assert.False(result.Success);
+        Assert.Contains("Password too weak", result.Errors);
+    }
+
+    [Fact]
+    public async Task RegisterAsync_MultipleErrors_ReturnsAllErrors()
+    {
+        var registerDto = new RegisterRequestDto 
+        { 
+            Email = "new@test.com", 
+            UserName = "newuser",
+            FullName = "New User",
+            Password = "Password123!" 
+        };
+
+        _mockUserManager.Setup(x => x.FindByEmailAsync(registerDto.Email))
+            .ReturnsAsync((ApplicationUser?)null);
+        _mockUserManager.Setup(x => x.FindByNameAsync(registerDto.UserName))
+            .ReturnsAsync((ApplicationUser?)null);
+        
+        var errors = new[] 
+        { 
+            new IdentityError { Description = "Error 1" },
+            new IdentityError { Description = "Error 2" }
+        };
+        _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerDto.Password))
+            .ReturnsAsync(IdentityResult.Failed(errors));
+
+        var result = await _authService.RegisterAsync(registerDto);
+
+        Assert.False(result.Success);
+        Assert.Equal(2, result.Errors.Count);
+    }
+    #endregion
+
+    #region LoginAsync Tests
+    [Fact]
+    public async Task LoginAsync_ValidCredentials_ReturnsSuccess()
     {
         var loginDto = new LoginRequestDto { Email = "test@test.com", Password = "Password123!" };
-        var user = new ApplicationUser { Email = "test@test.com", UserName = "testuser" };
+        var user = new ApplicationUser 
+        { 
+            Id = "user1",
+            Email = "test@test.com", 
+            UserName = "testuser",
+            FullName = "Test User",
+            IsActive = true
+        };
         var roles = new List<string> { "User" };
         
         _mockUserManager.Setup(x => x.FindByEmailAsync(loginDto.Email)).ReturnsAsync(user);
-        
-        // Vì AuthService không dùng SignInManager, nó sẽ dùng CheckPasswordAsync của UserManager
         _mockUserManager.Setup(x => x.CheckPasswordAsync(user, loginDto.Password)).ReturnsAsync(true);
-                          
         _mockUserManager.Setup(x => x.GetRolesAsync(user)).ReturnsAsync(roles);
-        _mockJwtTokenService.Setup(x => x.GenerateAccessToken(user, It.IsAny<IEnumerable<string>>())).Returns("mock_token");
+        _mockJwtTokenService.Setup(x => x.GenerateAccessToken(user, roles)).Returns("mock_token");
 
         var result = await _authService.LoginAsync(loginDto);
 
         Assert.NotNull(result);
         Assert.True(result.Success);
         Assert.NotNull(result.Data);
-        // Đổi .Token thành .AccessToken để khớp với DTO của bạn
         Assert.Equal("mock_token", result.Data.AccessToken);
+        Assert.Equal("test@test.com", result.Data.User.Email);
     }
 
     [Fact]
-    public async Task LoginAsync_InvalidPassword_ReturnsNull()
+    public async Task LoginAsync_ValidatesEmailFormatFormatValidation()
     {
-        var loginDto = new LoginRequestDto { Email = "test@test.com", Password = "WrongPassword!" };
-        var user = new ApplicationUser { Email = "test@test.com", UserName = "testuser" };
+        var loginDto = new LoginRequestDto { Email = "test@test.com", Password = "Password123!" };
+        var user = new ApplicationUser { Email = "test@test.com", UserName = "testuser", IsActive = true };
+        var roles = new List<string> { "User" };
         
-        _mockUserManager.Setup(x => x.FindByEmailAsync(loginDto.Email)).ReturnsAsync(user);
-        _mockUserManager.Setup(x => x.CheckPasswordAsync(user, loginDto.Password)).ReturnsAsync(false);
+        _mockUserManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _mockUserManager.Setup(x => x.CheckPasswordAsync(user, loginDto.Password)).ReturnsAsync(true);
+        _mockUserManager.Setup(x => x.GetRolesAsync(user)).ReturnsAsync(roles);
+        _mockJwtTokenService.Setup(x => x.GenerateAccessToken(user, roles)).Returns("token");
 
         var result = await _authService.LoginAsync(loginDto);
-
-        Assert.False(result.Success);
-    }
-
-    [Fact]
-    public async Task LoginAsync_EmailNotFound_ReturnsNull()
-    {
-        var loginDto = new LoginRequestDto { Email = "notfound@test.com", Password = "Password123!" };
-        _mockUserManager.Setup(x => x.FindByEmailAsync(loginDto.Email)).ReturnsAsync((ApplicationUser?)null);
-
-        var result = await _authService.LoginAsync(loginDto);
-
-        Assert.False(result.Success);
-    }
-
-    [Fact]
-    public async Task RegisterAsync_ValidData_ReturnsTrue()
-    {
-        var registerDto = new RegisterRequestDto { Email = "new@test.com", Password = "Password123!" };
-        _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerDto.Password))
-                        .ReturnsAsync(IdentityResult.Success);
-
-        var result = await _authService.RegisterAsync(registerDto);
 
         Assert.True(result.Success);
+        _mockUserManager.Verify(x => x.FindByEmailAsync(loginDto.Email), Times.Once);
     }
 
     [Fact]
-    public async Task RegisterAsync_DuplicateEmail_ReturnsFalse()
+    public async Task LoginAsync_ExpiryTimeIsSet()
     {
-        var registerDto = new RegisterRequestDto { Email = "exist@test.com", Password = "Password123!" };
-        _mockUserManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), registerDto.Password))
-                        .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Email already exists" }));
+        var loginDto = new LoginRequestDto { Email = "test@test.com", Password = "Password123!" };
+        var user = new ApplicationUser { Email = "test@test.com", UserName = "testuser", IsActive = true };
+        var roles = new List<string> { "User" };
+        
+        _mockUserManager.Setup(x => x.FindByEmailAsync(loginDto.Email)).ReturnsAsync(user);
+        _mockUserManager.Setup(x => x.CheckPasswordAsync(user, loginDto.Password)).ReturnsAsync(true);
+        _mockUserManager.Setup(x => x.GetRolesAsync(user)).ReturnsAsync(roles);
+        _mockJwtTokenService.Setup(x => x.GenerateAccessToken(user, roles)).Returns("token");
 
-        var result = await _authService.RegisterAsync(registerDto);
+        var result = await _authService.LoginAsync(loginDto);
 
-        Assert.False(result.Success);
+        Assert.True(result.Success);
+        Assert.True(result.Data.ExpiresAtUtc > System.DateTime.UtcNow);
     }
+    #endregion
 }

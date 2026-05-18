@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj": {}
+    "D:\\CSharp\\InteractHub\\backend\\test\\unittests\\UnitTests.csproj": {}
   },
   "projects": {
     "D:\\CSharp\\InteractHub\\backend\\Application\\Application.csproj": {
@@ -44,8 +44,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.200"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -112,7 +111,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.421/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
@@ -149,8 +148,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.200"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -209,7 +207,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.421/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
@@ -246,8 +244,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.200"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -306,18 +303,18 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.421/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj": {
+    "D:\\CSharp\\InteractHub\\backend\\test\\unittests\\UnitTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj",
+        "projectUniqueName": "D:\\CSharp\\InteractHub\\backend\\test\\unittests\\UnitTests.csproj",
         "projectName": "UnitTests",
-        "projectPath": "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\UnitTests.csproj",
+        "projectPath": "D:\\CSharp\\InteractHub\\backend\\test\\unittests\\UnitTests.csproj",
         "packagesPath": "C:\\Users\\minhn\\.nuget\\packages\\",
-        "outputPath": "D:\\CSharp\\InteractHub\\backend\\Test\\UnitTests\\obj\\",
+        "outputPath": "D:\\CSharp\\InteractHub\\backend\\test\\unittests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\minhn\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -350,8 +347,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.200"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -394,7 +390,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.421/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
