@@ -6,6 +6,11 @@ import type { Post } from "../types";
 import { useAuth } from "../context/AuthContext";
 import ReportModal from "./ReportModal";
 import ShareModal from "./ShareModal";
+import { CiHeart, CiShare2 } from "react-icons/ci";
+import { FaRegComment} from "react-icons/fa";
+import { MdDeleteOutline } from "react-icons/md";
+
+
 
 interface CommentItem {
   id: string;
@@ -223,7 +228,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
         
         {onDelete && (
           <button onClick={() => setShowDeleteConfirm(true)} className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50">
-            🗑️ Xóa
+            <MdDeleteOutline /> Xóa
           </button>
         )}
       </div>
@@ -254,19 +259,19 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
           onClick={handleLike}
           className={`flex-1 flex items-center justify-center gap-1 py-1.5 text-sm rounded-lg ${liked ? "text-red-500 bg-red-50" : "text-gray-500 hover:bg-gray-50"}`}
         >
-          ❤️ {likes} Thích
+          <CiHeart /> {likes} Thích
         </button>
         <button
           onClick={() => setShowComment(!showComment)}
           className="flex-1 flex items-center justify-center gap-1 py-1.5 text-sm text-gray-500 hover:bg-gray-50 rounded-lg"
         >
-          💬 {totalCommentsCount} Bình luận
+          <FaRegComment /> {totalCommentsCount} Bình luận
         </button>
         <button
           onClick={() => setShowShareModal(true)}
           className="flex-1 flex items-center justify-center gap-1 py-1.5 text-sm text-gray-500 hover:bg-gray-50 rounded-lg"
         >
-          🔁 Chia sẻ
+          <CiShare2 /> Chia sẻ
         </button>
       </div>
 

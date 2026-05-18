@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import { reportsAPI } from "../api";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
+import { FaUser, FaCalendarCheck } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa6";
 
 interface Report {
   id: string;
@@ -133,7 +135,7 @@ function Reports() {
             </div>
           ) : reports.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-4xl mb-3">🚩</div>
+              <div className="text-4xl mb-3"></div>
               <p className="text-gray-500">Bạn chưa gửi báo cáo nào</p>
             </div>
           ) : (
@@ -155,12 +157,12 @@ function Reports() {
                       </div>
                       <p className="text-sm text-gray-700 mb-2">{report.reason}</p>
                       <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>📅 {new Date(report.createdAt).toLocaleDateString("vi-VN")}</span>
+                        <span><FaCalendarCheck className="inline mr-1" /> {new Date(report.createdAt).toLocaleDateString("vi-VN")}</span>
                         {report.reviewedAt && (
-                          <span>✓ Xem xét: {new Date(report.reviewedAt).toLocaleDateString("vi-VN")}</span>
+                          <span><FaCheck className="inline mr-1" /> Xem xét: {new Date(report.reviewedAt).toLocaleDateString("vi-VN")}</span>
                         )}
                         {report.reviewedByName && (
-                          <span>👤 {report.reviewedByName}</span>
+                          <span><FaUser className="inline mr-1" /> {report.reviewedByName}</span>
                         )}
                       </div>
                     </div>

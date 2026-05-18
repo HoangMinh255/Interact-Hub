@@ -8,6 +8,8 @@ import { usePosts } from "../hooks/usePosts";
 import { postsAPI, hashtagsApi } from "../api";
 import type { Hashtag, Post } from "../types";
 import { useAuth } from "../context/AuthContext";
+import { IoCameraOutline } from "react-icons/io5";
+import { CiBellOn } from "react-icons/ci";
 
 function Home() {
   const { posts: initialPosts, loading } = usePosts();
@@ -108,7 +110,7 @@ function Home() {
     } catch (error: any) {
       //const errorMsg = error.response?.data?.message || error.message || "Đăng bài thất bại";
       //console.error("Post creation error:", errorMsg);
-      //alert(`❌ Lỗi: ${errorMsg}`);
+      //alert(`Lỗi: ${errorMsg}`);
     }
   };
 
@@ -116,11 +118,11 @@ function Home() {
     try {
       await postsAPI.delete(id);
       setPosts(posts.filter((p) => p.id !== id));
-      alert("✅ Bài viết đã được xóa");
+      alert("Bài viết đã được xóa");
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || error.message || "Xóa bài viết thất bại";
       console.error("Post deletion error:", errorMsg);
-      alert(`❌ Lỗi: ${errorMsg}`);
+      alert(`Lỗi: ${errorMsg}`);
     }
   };
 
@@ -178,7 +180,7 @@ function Home() {
               onClick={() => fileRef.current?.click()}
               className="text-sm text-gray-500 hover:text-blue-500 flex items-center gap-1"
             >
-              📷 Thêm ảnh
+              <IoCameraOutline /> Thêm ảnh
             </button>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleImage} className="hidden" multiple />
             <button

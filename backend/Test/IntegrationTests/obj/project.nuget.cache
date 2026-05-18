@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "apUEUmqZUsY=",
+  "dgSpecHash": "e/8z+c654gE=",
   "success": true,
   "projectFilePath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
   "expectedPackageFiles": [
@@ -21,15 +21,5 @@
     "C:\\Users\\minhn\\.nuget\\packages\\xunit.extensibility.execution\\2.9.3\\xunit.extensibility.execution.2.9.3.nupkg.sha512",
     "C:\\Users\\minhn\\.nuget\\packages\\xunit.runner.visualstudio\\3.1.4\\xunit.runner.visualstudio.3.1.4.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
-      "warningLevel": 1,
-      "filePath": "D:\\CSharp\\InteractHub\\backend\\Test\\IntegrationTests\\IntegrationTests.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "../components/layout/Sidebar";
+import { IoMdSettings } from "react-icons/io";
+import { CiMail } from "react-icons/ci";
+import { MdLock, MdEmail, MdWarning } from "react-icons/md";
 
 interface EmailForm {
   email: string;
@@ -49,15 +52,15 @@ function Settings() {
       <div className="flex-1 px-0 md:px-4 py-6 flex flex-col gap-4">
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <h2 className="text-base font-medium text-gray-800 px-6 py-4 border-b border-gray-100">
-            ⚙️ Cài đặt tài khoản
+            <IoMdSettings className="inline mr-2" /> Cài đặt tài khoản
           </h2>
 
           {/* Tab */}
           <div className="flex border-b border-gray-100 overflow-x-auto">
             {[
-              { key: "email", label: "📧 Đổi email" },
-              { key: "password", label: "🔒 Đổi mật khẩu" },
-              { key: "danger", label: "⚠️ Tài khoản" },
+              { key: "email", label: " Đổi email" },
+              { key: "password", label: "Đổi mật khẩu" },
+              { key: "danger", label: "Tài khoản" },
             ].map((t) => (
               <button
                 key={t.key}
@@ -101,7 +104,7 @@ function Settings() {
                     <p className="text-xs text-red-500 mt-1">{emailForm.formState.errors.email.message}</p>
                   )}
                 </div>
-                {emailSuccess && <p className="text-xs text-green-500">✅ Đổi email thành công!</p>}
+                {emailSuccess && <p className="text-xs text-green-500">Đổi email thành công!</p>}
                 <button type="submit" className="w-full h-10 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600">
                   Cập nhật email
                 </button>
@@ -154,7 +157,7 @@ function Settings() {
                     <p className="text-xs text-red-500 mt-1">{passwordForm.formState.errors.confirmPassword.message}</p>
                   )}
                 </div>
-                {passwordSuccess && <p className="text-xs text-green-500">✅ Đổi mật khẩu thành công!</p>}
+                {passwordSuccess && <p className="text-xs text-green-500">Đổi mật khẩu thành công!</p>}
                 <button type="submit" className="w-full h-10 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600">
                   Cập nhật mật khẩu
                 </button>

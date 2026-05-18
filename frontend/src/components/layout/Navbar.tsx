@@ -3,6 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { usersAPI, notificationsAPI } from "../../api"; 
 
+import { IoMdSettings } from "react-icons/io";
+import { FaHeart, FaUserFriends, FaLightbulb, FaBell } from "react-icons/fa";
+import { FcSearch, FcHome } from "react-icons/fc";
+import { MdLogout } from "react-icons/md";
+
+
 import * as signalR from "@microsoft/signalr";
 
 type SearchUser = {
@@ -256,7 +262,7 @@ const Navbar = () => {
             className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center md:hidden"
             onClick={() => setMenuOpen((prev) => !prev)}
           >
-            🔍
+            <FcSearch size={20} />
           </button>
 
           {isAuthenticated ? (
@@ -267,7 +273,7 @@ const Navbar = () => {
                     className="relative w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
                     onClick={() => setShowNotifications((prev) => !prev)}
                   >
-                    🔔
+                    <FaBell size={15} className="text-yellow-500"/>
                     {unreadCount > 0 && (
                       <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">
                         {unreadCount > 99 ? '99+' : unreadCount}
@@ -296,7 +302,7 @@ const Navbar = () => {
                             }`}
                           >
                             <div className="w-10 h-10 shrink-0 rounded-full bg-blue-100 flex items-center justify-center text-xl">
-                              💡
+                              <FaLightbulb className="text-blue-500" />
                             </div>
                             <div className="flex-1">
                               <p className={`text-sm text-gray-800 ${!notif.isRead ? 'font-semibold' : 'font-normal'}`}>
@@ -327,7 +333,7 @@ const Navbar = () => {
                 onClick={handleLogout}
                 className="text-sm text-gray-600 hover:text-red-500 hidden sm:block"
               >
-                Đăng xuất
+               <MdLogout className="inline mr-1" /> Đăng xuất
               </button>
 
               {/* Hamburger — mobile only */}
@@ -368,28 +374,28 @@ const Navbar = () => {
             onClick={() => setMenuOpen(false)}
             className="flex items-center gap-3 py-2 text-sm text-gray-700 hover:text-blue-500"
           >
-            🏠 Tin tức
+          <FcHome /> Tin tức
           </Link>
           <Link
             to="/friends"
             onClick={() => setMenuOpen(false)}
             className="flex items-center gap-3 py-2 text-sm text-gray-700 hover:text-blue-500"
           >
-            👥 Bạn bè
+            <FaUserFriends /> Bạn bè
           </Link>
           <Link
             to="/favorites"
             onClick={() => setMenuOpen(false)}
             className="flex items-center gap-3 py-2 text-sm text-gray-700 hover:text-blue-500"
           >
-            ❤️ Yêu thích
+            <FaHeart /> Yêu thích
           </Link>
           <Link
             to="/settings"
             onClick={() => setMenuOpen(false)}
             className="flex items-center gap-3 py-2 text-sm text-gray-700 hover:text-blue-500"
           >
-            ⚙️ Cài đặt
+            <IoMdSettings /> Cài đặt
           </Link>
 
           {/* Logout in mobile menu */}
