@@ -7,6 +7,24 @@ const api = axios.create({
   },
 });
 
+export const API_ORIGIN = new URL(api.defaults.baseURL ?? window.location.origin).origin;
+
+export const resolveMediaUrl = (url?: string | null) => {
+  if (!url) {
+    return null;
+  }
+
+  if (/^(https?:|data:|blob:)/i.test(url)) {
+    return url;
+  }
+
+  if (url.startsWith("/")) {
+    return `${API_ORIGIN}${url}`;
+  }
+
+  return `${API_ORIGIN}/${url}`;
+};
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {

@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
-import { storiesAPI, postsAPI, usersAPI, notificationsAPI } from "../api";
+import { storiesAPI, postsAPI, usersAPI, notificationsAPI, resolveMediaUrl } from "../api";
+
 import type { Post } from "../types";
 
 interface ProfileForm {
@@ -43,6 +44,7 @@ function Profile() {
   const profileUserId = userId ?? authUser?.id;
   const isOwnProfile = !userId || userId === authUser?.id;
   const fileRef = useRef<HTMLInputElement>(null);
+  const { refreshUser } = useAuth();
 
   const { register, handleSubmit, formState: { errors }, setValue } = useForm<ProfileForm>({
     defaultValues: { fullName: viewedUser?.fullName, bio: viewedUser?.bio || "Chưa có giới thiệu" }
@@ -64,7 +66,7 @@ function Profile() {
             setViewedUser(u);
             setBio(u.bio || "Chưa có giới thiệu");
             setFullName(u.fullName);
-            setAvatar(u.avatarUrl || null);
+            setAvatar(resolveMediaUrl(u.avatarUrl));
             setValue("fullName", u.fullName);
             setValue("bio", u.bio || "Chưa có giới thiệu");
           }
@@ -72,12 +74,14 @@ function Profile() {
         }
 
         if (authUser) {
-          setViewedUser(authUser);
-          setBio(authUser.bio || "Chưa có giới thiệu");
-          setFullName(authUser.fullName);
-          setAvatar(authUser.avatarUrl || null);
-          setValue("fullName", authUser.fullName);
-          setValue("bio", authUser.bio || "Chưa có giới thiệu");
+          const response = await usersAPI.getUser();
+          const u = response.data?.data ?? authUser;
+          setViewedUser(u);
+          setBio(u.bio || "Chưa có giới thiệu");
+          setFullName(u.fullName);
+          setAvatar(resolveMediaUrl(u.avatarUrl));
+          setValue("fullName", u.fullName);
+          setValue("bio", u.bio || "Chưa có giới thiệu");
         }
       } catch (error) {
         console.error("Failed to load profile:", error);
@@ -179,11 +183,12 @@ function Profile() {
         setAvatar(previewUrl);
 
         const response = await usersAPI.uploadAvatar(file);
-        const uploadedAvatarUrl = response.data?.data?.avatarUrl;
+        const uploadedAvatarUrl = resolveMediaUrl(response.data?.data?.avatarUrl);
 
         if (uploadedAvatarUrl) {
           setAvatar(uploadedAvatarUrl);
           setViewedUser((prev) => prev ? { ...prev, avatarUrl: uploadedAvatarUrl } : prev);
+          await refreshUser();
         }
       } catch (error) {
         console.error("Failed to upload avatar:", error);

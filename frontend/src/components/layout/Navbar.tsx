@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { usersAPI, notificationsAPI } from "../../api"; 
 
 import { IoMdSettings } from "react-icons/io";
 import { FaHeart, FaUserFriends, FaLightbulb, FaBell } from "react-icons/fa";
 import { FcSearch, FcHome } from "react-icons/fc";
 import { MdLogout } from "react-icons/md";
 
+import { usersAPI, notificationsAPI, resolveMediaUrl } from "../../api"; 
 
 import * as signalR from "@microsoft/signalr";
 
@@ -217,7 +217,7 @@ const Navbar = () => {
                     >
                         <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center text-white text-xs font-medium overflow-hidden">
                           {u.avatarUrl ? (
-                            <img src={u.avatarUrl} alt={u.fullName} className="w-full h-full object-cover" />
+                            <img src={resolveMediaUrl(u.avatarUrl) ?? undefined} alt={u.fullName} className="w-full h-full object-cover" />
                           ) : (
                             (u.fullName || u.userName).charAt(0).toUpperCase()
                           )}
@@ -323,9 +323,13 @@ const Navbar = () => {
               {/* Avatar */}
               <Link
                 to="/profile"
-                className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium cursor-pointer"
+                className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-medium cursor-pointer overflow-hidden"
               >
-                U
+                {user?.avatarUrl ? (
+                  <img src={resolveMediaUrl(user.avatarUrl) ?? undefined} alt={user.fullName} className="w-full h-full object-cover" />
+                ) : (
+                  <span>{(user?.fullName || user?.userName || "U").charAt(0).toUpperCase()}</span>
+                )}
               </Link>
 
               {/* Logout — hidden on mobile (accessible via hamburger) */}

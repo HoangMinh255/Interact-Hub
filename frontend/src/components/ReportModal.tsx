@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-
 interface ReportModalProps {
   postId: string;
   isOpen: boolean;

@@ -63,6 +63,7 @@ public class AuthService : IAuthService
             UserName = user.UserName ?? string.Empty,
             FullName = user.FullName,
             Email = user.Email ?? string.Empty,
+            AvatarUrl = user.AvatarUrl,
             Roles = [AppConstants.Roles.User]
         };
 
@@ -101,6 +102,7 @@ public class AuthService : IAuthService
                 UserName = user.UserName ?? string.Empty,
                 FullName = user.FullName,
                 Email = user.Email ?? string.Empty,
+                AvatarUrl = user.AvatarUrl,
                 Roles = roles.ToArray()
             }
         };

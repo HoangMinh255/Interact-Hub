@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import { reportsAPI } from "../api";
 import LoadingSkeleton from "../components/ui/LoadingSkeleton";
+<<<<<<< HEAD
 import { FaUser, FaCalendarCheck } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa6";
+=======
+>>>>>>> origin/feature/avatar
 
 interface Report {
   id: string;

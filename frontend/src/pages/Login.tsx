@@ -33,6 +33,7 @@ function Login() {
         id: payload.user.id,
         userName: payload.user.userName,
         email: payload.user.email,
+        avatarUrl: payload.user.avatarUrl,
         followersCount: 0,
         fullName: payload.user.fullName,
       });

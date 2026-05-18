@@ -6,6 +6,7 @@ import { usersAPI } from "../api";
 
 interface AuthContextType extends AuthState {
   login: (token: string, user: User) => void;
+  refreshUser: () => Promise<void>;
   logout: () => void;
 }
 
@@ -18,14 +19,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated: !!localStorage.getItem("token"),
   });
 
-  useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
+  const refreshUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-  usersAPI.getUser()
-    .then((response) => {
+    try {
+      const response = await usersAPI.getUser();
       const u = response.data?.data;
       if (!u) return;
+
       setAuth((prev) => ({
         ...prev,
         isAuthenticated: true,
@@ -34,16 +36,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           fullName: u.fullName,
           userName: u.userName,
           email: u.email,
+          avatarUrl: u.avatarUrl,
           followersCount: u.followersCount ?? 0,
+          bio: u.bio,
         },
       }));
-    })
-    .catch(() => {
-      // Token is invalid or expired — log out
+    } catch {
       localStorage.removeItem("token");
       setAuth({ user: null, token: null, isAuthenticated: false });
-    });
-}, []);
+    }
+  };
+
+  useEffect(() => {
+    void refreshUser();
+  }, []);
 
   const login = (token: string, user: User) => {
     localStorage.setItem("token", token);
@@ -56,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ ...auth, login, logout }}>
+    <AuthContext.Provider value={{ ...auth, login, refreshUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

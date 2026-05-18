@@ -1,5 +1,6 @@
 using InteractHub.Application.Interfaces.Services;
 using InteractHub.Infrastructure.Options;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -9,13 +10,16 @@ public sealed class FileStorageService : IFileStorageService
 {
     private readonly BlobStorageOptions _options;
     private readonly ILogger<FileStorageService> _logger;
+    private readonly IHostEnvironment _hostEnvironment;
 
     public FileStorageService(
         IOptions<BlobStorageOptions> options,
-        ILogger<FileStorageService> logger)
+        ILogger<FileStorageService> logger,
+        IHostEnvironment hostEnvironment)
     {
         _options = options.Value;
         _logger = logger;
+        _hostEnvironment = hostEnvironment;
     }
 
     public async Task<(string BlobName, string Url)> UploadAsync(
@@ -31,8 +35,7 @@ public sealed class FileStorageService : IFileStorageService
 
         try
         {
-            // Get base upload directory
-            var uploadDir = Path.Combine(_options.LocalStoragePath ?? "uploads", containerName);
+            var uploadDir = Path.Combine(ResolveStorageRoot(), containerName);
             
             // Create directory if it doesn't exist
             if (!Directory.Exists(uploadDir))
@@ -78,7 +81,7 @@ public sealed class FileStorageService : IFileStorageService
 
         try
         {
-            var filePath = Path.Combine(_options.LocalStoragePath ?? "uploads", containerName, blobName);
+            var filePath = Path.Combine(ResolveStorageRoot(), containerName, blobName);
 
             if (File.Exists(filePath))
             {
@@ -92,5 +95,16 @@ public sealed class FileStorageService : IFileStorageService
         }
 
         await Task.CompletedTask;
+    }
+
+    private string ResolveStorageRoot()
+    {
+        var configuredPath = string.IsNullOrWhiteSpace(_options.LocalStoragePath)
+            ? "uploads"
+            : _options.LocalStoragePath;
+
+        return Path.IsPathRooted(configuredPath)
+            ? configuredPath
+            : Path.Combine(_hostEnvironment.ContentRootPath, configuredPath);
     }
 }

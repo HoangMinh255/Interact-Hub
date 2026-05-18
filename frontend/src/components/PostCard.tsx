@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { commentsAPI, notificationsAPI, postsAPI, reportsAPI } from "../api";
+import { commentsAPI, notificationsAPI, postsAPI, reportsAPI, resolveMediaUrl } from "../api";
 import type { Post } from "../types";
 import { useAuth } from "../context/AuthContext";
 import ReportModal from "./ReportModal";
@@ -71,9 +71,40 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
     void loadComments();
   }, [post.id, showComment]);
 
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikes(liked ? likes - 1 : likes + 1);
+  useEffect(() => {
+    let mounted = true;
+    const loadLikeState = async () => {
+      try {
+        const [likedRes, countRes] = await Promise.all([
+          postsAPI.isLiked(post.id),
+          postsAPI.getLikeCount(post.id),
+        ]);
+
+        if (!mounted) return;
+        setLiked(Boolean(likedRes.data?.data?.liked ?? likedRes.data?.liked ?? likedRes.data));
+        const likeCount = likedRes.data?.data?.likeCount ?? countRes.data?.data?.likeCount ?? countRes.data;
+        setLikes(Number(likeCount ?? 0));
+      } catch {
+      }
+    };
+    void loadLikeState();
+    return () => { mounted = false; };
+  }, [post.id]);
+
+  const handleLike = async () => {
+    try {
+      if (liked) {
+        await postsAPI.unlike(post.id);
+        setLiked(false);
+        setLikes((prev) => Math.max(0, prev - 1));
+      } else {
+        await postsAPI.like(post.id);
+        setLiked(true);
+        setLikes((prev) => prev + 1);
+      }
+    } catch (e) {
+      console.error("Like action failed", e);
+    }
   };
 
   const submitComment = async (parentId: string | null = null) => {
@@ -169,7 +200,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
       <div className="flex items-center gap-3 mb-3">
         {(() => {
           // Logic render Avatar cho bài Shared
-          let avatar = post.isShared ? (post.sharedByAvatar ?? "") : (post.authorAvatar ?? "");
+          let avatar = resolveMediaUrl(post.isShared ? (post.sharedByAvatar ?? "") : (post.authorAvatar ?? "")) ?? "";
           let displayName = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
           let targetId = post.isShared 
             ? (post.sharedById ?? null) 
@@ -231,6 +262,15 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
             <MdDeleteOutline /> Xóa
           </button>
         )}
+        {!onDelete && (
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50"
+            title="Báo cáo bài viết"
+          >
+            🚩 Báo cáo
+          </button>
+        )}
       </div>
 
       {post.isShared && post.shareComment && (
@@ -242,7 +282,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
       )}
 
       <p className="text-sm text-gray-700 mb-3 whitespace-pre-wrap">
-        {renderContentWithHashtags(post.content + post.hashtag?.map(tag => ` #${tag}`).join(""))}
+        {renderContentWithHashtags(post.content + (post.hashtag?.map(tag => ` #${tag}`).join("") ?? ""))}
       </p>
 
       {post.mediaUrls && post.mediaUrls.length > 0 && (
@@ -290,7 +330,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                 {/* 1. BÌNH LUẬN CHA GỐC */}
                 <div className="flex gap-2">
                   {c.authorAvatar ? (
-                    <img src={c.authorAvatar} className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-100 z-10" />
+                    <img src={resolveMediaUrl(c.authorAvatar) ?? undefined} className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-100 z-10" />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs shrink-0 font-medium z-10">
                       {(c.authorName ?? "U").charAt(0).toUpperCase()}
@@ -320,7 +360,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                         <div className="absolute -left-4 top-[14px] w-4 h-[2px] bg-gray-200"></div>
                         
                         {reply.authorAvatar ? (
-                          <img src={reply.authorAvatar} className="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-100 relative z-10" />
+                          <img src={resolveMediaUrl(reply.authorAvatar) ?? undefined} className="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-100 relative z-10" />
                         ) : (
                           <div className="w-7 h-7 rounded-full bg-gray-400 flex items-center justify-center text-white text-[10px] shrink-0 font-medium relative z-10">
                             {(reply.authorName ?? "U").charAt(0).toUpperCase()}
@@ -354,7 +394,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                         <div className="absolute -left-4 top-1/2 w-4 h-[2px] bg-gray-200"></div>
                         
                         {user?.avatarUrl ? (
-                          <img src={user.avatarUrl} className="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-100 relative z-10" />
+                          <img src={resolveMediaUrl(user.avatarUrl) ?? undefined} className="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-100 relative z-10" />
                         ) : (
                           <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] shrink-0 font-medium relative z-10">
                             {(user?.fullName ?? "U").charAt(0).toUpperCase()}
@@ -383,7 +423,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
           {/* --- Ô NHẬP BÌNH LUẬN GỐC TỔNG --- */}
           <div className="flex gap-2 mt-4 pt-3 border-t border-gray-50 items-center">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-100" />
+              <img src={resolveMediaUrl(user.avatarUrl) ?? undefined} className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-100" />
             ) : (
               <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs shrink-0 font-medium">
                 {(user?.fullName ?? "U").charAt(0).toUpperCase()}

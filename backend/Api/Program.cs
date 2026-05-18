@@ -34,6 +34,12 @@ builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection(CorsOpt
 builder.Services.Configure<BlobStorageOptions>(
     builder.Configuration.GetSection(BlobStorageOptions.SectionName));
 
+var blobStorageOptions = builder.Configuration.GetSection(BlobStorageOptions.SectionName).Get<BlobStorageOptions>()
+    ?? new BlobStorageOptions();
+var uploadsRoot = Path.IsPathRooted(blobStorageOptions.LocalStoragePath)
+    ? blobStorageOptions.LocalStoragePath
+    : Path.Combine(builder.Environment.ContentRootPath, blobStorageOptions.LocalStoragePath);
+
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 //  Azure Blob options

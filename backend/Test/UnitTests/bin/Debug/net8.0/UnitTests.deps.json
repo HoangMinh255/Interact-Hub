@@ -1821,7 +1821,11 @@
         },
         "runtime": {
           "Application.dll": {
+<<<<<<< HEAD
             "assemblyVersion": "1.0.0",
+=======
+            "assemblyVersion": "1.0.0.0",
+>>>>>>> origin/feature/avatar
             "fileVersion": "1.0.0.0"
           }
         }
@@ -1837,7 +1841,11 @@
         },
         "runtime": {
           "Domain.dll": {
+<<<<<<< HEAD
             "assemblyVersion": "1.0.0",
+=======
+            "assemblyVersion": "1.0.0.0",
+>>>>>>> origin/feature/avatar
             "fileVersion": "1.0.0.0"
           }
         }
@@ -1853,7 +1861,11 @@
         },
         "runtime": {
           "Infrastructure.dll": {
+<<<<<<< HEAD
             "assemblyVersion": "1.0.0",
+=======
+            "assemblyVersion": "1.0.0.0",
+>>>>>>> origin/feature/avatar
             "fileVersion": "1.0.0.0"
           }
         }
