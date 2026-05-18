@@ -4,19 +4,19 @@ import type { Post } from "../types";
 
 type PostApiResponse = {
   id: string;
-  authorId?: string;
+  originalAuthorId?: string;
   visibility?: number;
-  content: string;
+  originalContent: string;
   createdAt: string;
-  authorName?: string;
-  authorAvatar?: string;
+  originalAuthorName?: string;
+  originalAuthorAvatar?: string;
   mediaUrls?: string[];
   commentCount?: number;
   isShared?: boolean;
-  shareComment?: string;
-  sharedById?: string;
-  sharedByName?: string;
-  sharedByAvatar?: string | null;
+  content?: string;
+  authorId?: string;
+  authorName?: string;
+  authorAvatar?: string | null;
   originalPostId?: string;
   hashtag?: string[];
 };
@@ -24,19 +24,19 @@ type PostApiResponse = {
 const mapPost = (post: PostApiResponse): Post => ({
   id: post.id,
   visibility: post.visibility ?? 0,
-  authorName: post.authorName ?? "Unknown",
-  authorAvatar: post.authorAvatar ?? "",
-  author: post.authorId ? { id: post.authorId, fullName: post.authorName ?? "", userName: "", email: "", followersCount: 0 } : undefined,
-  content: post.content,
+  originalAuthorName: post.originalAuthorName ?? "Unknown",
+  originalAuthorAvatar: post.originalAuthorAvatar ?? "",
+  originalAuthorId: post.originalAuthorId,
+  originalContent: post.originalContent,
   mediaUrls: post.mediaUrls??[],
   likesCount: 0,
   commentCount: post.commentCount ?? 0,
   createdAt: new Date(post.createdAt).toLocaleString("vi-VN"),
   isShared: post.isShared ?? false,
-  shareComment: post.shareComment,
-  sharedById: post.sharedById,
-  sharedByName: post.sharedByName,
-  sharedByAvatar: post.sharedByAvatar ?? undefined,
+  content: post.content ?? "",
+  authorId: post.authorId ?? "",
+  authorName: post.authorName ?? "Unknown",
+  authorAvatar: post.authorAvatar ?? undefined,
   originalPostId: post.originalPostId,
   hashtag: post.hashtag ?? [],
 });

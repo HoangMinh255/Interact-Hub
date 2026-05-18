@@ -48,12 +48,12 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content ?? "");
   const [savingEdit, setSavingEdit] = useState(false);
-  const [localContent, setLocalContent] = useState(post.content ?? "");
+  const [localContent, setLocalContent] = useState(post.isShared ? (post.originalContent ?? "") : (post.content ?? ""));
 
   useEffect(() => {
-    setLocalContent(post.content ?? "");
+    setLocalContent(post.isShared ? (post.originalContent ?? "") : (post.content ?? ""));
     setEditContent(post.content ?? "");
-  }, [post.content]);
+  }, [post.content, post.originalContent, post.isShared]);
 
   useEffect(() => {
     if (!showComment) return;
@@ -124,7 +124,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
     try {
       await commentsAPI.create(post.id, textToSubmit.trim(), parentId);
 
-      const targetId = post.author?.id ?? (post as any).authorId ?? null;
+      const targetId = post.authorId ?? (post as any).authorId ?? null;
       if (targetId && user?.id && targetId !== user.id) {
         await notificationsAPI.create({
           recipientId: targetId,
@@ -210,11 +210,9 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
       <div className="flex items-center gap-3 mb-3">
         {(() => {
           // Logic render Avatar cho bài Shared
-          const rawAvatar = post.isShared ? (post.sharedByAvatar ?? null) : (post.authorAvatar ?? null);
-          let displayName = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
-          let targetId = post.isShared 
-            ? (post.sharedById ?? null) 
-            : (post.author?.id ?? (post as any).authorId ?? null);
+          const rawAvatar = post.authorAvatar ?? null
+          let displayName = post.authorName || "Unknown"
+          let targetId = post.authorId ?? (post as any).authorId ?? null;
 
           if (targetId) {
             return (
@@ -230,17 +228,15 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
         <div className="flex-1">
           {(() => {
             // Logic render Tên cho bài Shared
-            let targetId = post.isShared 
-              ? (post.sharedById ?? null) 
-              : (post.author?.id ?? (post as any).authorId ?? null);
-            let name = post.isShared ? (post.sharedByName ?? "Unknown") : (post.authorName || "Unknown");
+            let targetId = post.authorId ?? (post as any).authorId ?? null;
+            let name = post.authorName || "Unknown"
             
             if (targetId) {
               return (
                 <div>
                   <Link to={`/profile/${targetId}`} className="text-sm font-medium text-gray-800 hover:underline">{name}</Link>
-                  {post.isShared && post.authorName && (
-                    <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.authorName}</span></div>
+                  {post.isShared && post.originalAuthorName && (
+                    <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.originalAuthorName}</span></div>
                   )}
                 </div>
               );
@@ -248,8 +244,8 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
             return (
               <div>
                 <p className="text-sm font-medium text-gray-800">{name}</p>
-                {post.isShared && post.authorName && (
-                  <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.authorName}</span></div>
+                {post.isShared && post.originalAuthorName && (
+                  <div className="text-xs text-gray-500 mt-0.5">Original by <span className="text-gray-700 font-medium">{post.originalAuthorName}</span></div>
                 )}
               </div>
             );
@@ -260,12 +256,11 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
         </div>
         
         {(() => {
-          const originalAuthorId = post.author?.id ?? (post as any).authorId ?? null;
-          const isOriginalAuthor = user?.id === originalAuthorId;
+          const isAuthor = user?.id === (post.authorId ?? (post as any).authorId ?? null);
 
           return (
             <>
-              {isOriginalAuthor && (
+              {isAuthor && (
                 <button onClick={() => { setIsEditing(true); setEditContent(localContent); }} className="text-xs text-gray-600 px-2 py-1 rounded hover:bg-gray-50 mr-2">
                   Sửa
                 </button>
@@ -291,10 +286,10 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
         })()}
       </div>
 
-      {post.isShared && post.shareComment && (
+      {post.isShared && post.content && (
         <div className="mb-3 pb-3 border-b border-gray-200">
           <p className="text-sm text-gray-600 italic bg-blue-50 rounded-lg px-3 py-2 border-l-2 border-blue-400">
-            "{post.shareComment}"
+            "{post.content}"
           </p>
         </div>
       )}
@@ -307,13 +302,13 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
             className="w-full border border-gray-200 rounded-lg p-3 text-sm h-28 resize-none"
           />
           <div className="flex gap-2 justify-end mt-2">
-            <button onClick={() => { setIsEditing(false); setEditContent(localContent); }} className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Hủy</button>
+            <button onClick={() => { setIsEditing(false); setEditContent(post.content ?? ""); }} className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200">Hủy</button>
             <button
               onClick={async () => {
                 try {
                   setSavingEdit(true);
                   await postsAPI.update(post.id, editContent);
-                  setLocalContent(editContent);
+                  setLocalContent(post.isShared ? (post.originalContent ?? "") : editContent);
                   setIsEditing(false);
                 } catch (err) {
                   console.error("Failed to update post:", err);
@@ -330,7 +325,12 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
         </div>
       ) : (
         <p className="text-sm text-gray-700 mb-3 whitespace-pre-wrap">
-          {renderContentWithHashtags((localContent ?? post.content) + (post.hashtag?.map(tag => ` #${tag}`).join("") ?? ""))}
+          {renderContentWithHashtags(
+            ( post.isShared ? 
+              (localContent ?? post.originalContent ?? "")
+              : (localContent ?? post.content ?? "")
+            ) + (post.hashtag?.map(tag => ` #${tag}`).join("") ?? "")
+          )}
         </p>
       )}
 

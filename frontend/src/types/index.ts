@@ -23,12 +23,12 @@ export interface Post {
   mediaUrls: string[];
   likesCount: number;
   commentCount: number;
-  author?: User;
+  authorId: string;
   isShared?: boolean;
-  shareComment?: string;
-  sharedById?: string;
-  sharedByName?: string;
-  sharedByAvatar?: string | null;
+  originalAuthorName?: string;
+  originalAuthorAvatar?: string;
+  originalAuthorId?: string;
+  originalContent?: string;
   originalPostId?: string;
   hashtag?: string[];
 }
