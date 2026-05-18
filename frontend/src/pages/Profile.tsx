@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
-import { storiesAPI, postsAPI, usersAPI, notificationsAPI, resolveMediaUrl } from "../api";
+import { storiesAPI, postsAPI, usersAPI, resolveMediaUrl } from "../api";
 
 import type { Post } from "../types";
 

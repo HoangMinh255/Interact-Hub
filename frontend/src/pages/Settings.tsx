@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "../components/layout/Sidebar";
 import { IoMdSettings } from "react-icons/io";
-import { CiMail } from "react-icons/ci";
-import { MdLock, MdEmail, MdWarning } from "react-icons/md";
 
 interface EmailForm {
   email: string;

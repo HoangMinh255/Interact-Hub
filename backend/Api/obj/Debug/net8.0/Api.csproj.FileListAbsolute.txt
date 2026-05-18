@@ -162,3 +162,5 @@ D:\CSharp\InteractHub\backend\api\obj\Debug\net8.0\refint\Api.dll
 D:\CSharp\InteractHub\backend\api\obj\Debug\net8.0\Api.pdb
 D:\CSharp\InteractHub\backend\api\obj\Debug\net8.0\Api.genruntimeconfig.cache
 D:\CSharp\InteractHub\backend\api\obj\Debug\net8.0\ref\Api.dll
+D:\CSharp\InteractHub\backend\api\bin\Debug\net8.0\CloudinaryDotNet.dll
+D:\CSharp\InteractHub\backend\api\bin\Debug\net8.0\Newtonsoft.Json.dll

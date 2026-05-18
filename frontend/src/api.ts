@@ -100,12 +100,12 @@ export const postsAPI = {
   getAll: () => api.get("/post"),
   getByUser: (userId: string, page = 0) => api.get(`/post/user/${userId}/page/${page}`),
   getLiked: () => api.get("/posts/me/likes"),
-  create: (
-    content: string,
-    visibility: number = 0,
-    media: { MediaUrl: string; MediaType: number }[] = []
-  ) => {
-    return api.post("/post", { Content: content, Visibility: visibility, Media: media, Hashtags: null });
+  create: (formData: FormData) => {
+    return api.post("/post", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
   like: (postId: string) => api.post(`/posts/${postId}/likes`),
   unlike: (postId: string) => api.delete(`/posts/${postId}/likes`),

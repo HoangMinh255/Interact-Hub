@@ -9,7 +9,6 @@ import { postsAPI, hashtagsApi } from "../api";
 import type { Hashtag, Post } from "../types";
 import { useAuth } from "../context/AuthContext";
 import { IoCameraOutline } from "react-icons/io5";
-import { CiBellOn } from "react-icons/ci";
 
 function Home() {
   const { posts: initialPosts, loading } = usePosts();
@@ -20,7 +19,7 @@ function Home() {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const [selectedMedia, setSelectedMedia] = useState<Array<{url: string, type: number}>>([]);
+  const [selectedMedia, setSelectedMedia] = useState<Array<{url: string, type: number, file: File}>>([]);
   const { user } = useAuth();
 
 
@@ -56,11 +55,10 @@ function Home() {
       const maxFiles = 4;
       const arr = Array.from(files).slice(0, maxFiles - selectedMedia.length);
       arr.forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setSelectedMedia((prev) => [...prev, { url: reader.result as string, type: 0 }]);
-        };
-        reader.readAsDataURL(file);
+        const previewUrl = URL.createObjectURL(file);
+        const isVideo = file.type.startsWith('video/') ? 1 : 0;
+        
+        setSelectedMedia((prev) => [...prev, { url: previewUrl, type: isVideo, file: file }]);
       });
     }
     if (e.target) e.target.value = "";
@@ -72,19 +70,32 @@ function Home() {
 
   const handlePost = async () => {
     if (!newPost.trim() && selectedMedia.length === 0) return;
-    const mediaPayload = selectedMedia.map((m) => ({
-      MediaUrl: m.url,
-      MediaType: m.type,
-    }));
+
+    // 1. Khởi tạo FormData
+    const formData = new FormData();
+    formData.append("Content", newPost.trim());
+    formData.append("Visibility", visibility.toString());
+
+    // 2. Đính kèm các file thực tế vào formData
+    selectedMedia.forEach((m) => {
+      formData.append("files", m.file); 
+      console.log(`Đã thêm file vào FormData: ${m.file.name} (${m.file.type})`);
+    });
+
     try {
-      const response = await postsAPI.create(newPost.trim(), visibility, mediaPayload);
+      // 3. Truyền thẳng formData vào API
+      const response = await postsAPI.create(formData);
       console.log("Post created:", response.data);
+
       setNewPost("");
       setVisibility(0);
+      
+      // Xóa preview URLs khỏi bộ nhớ của trình duyệt để tránh tràn RAM
+      selectedMedia.forEach(m => URL.revokeObjectURL(m.url));
       setSelectedMedia([]);
-      // Reload posts to get fresh data with author info
+
+      // 4. Reload lại posts để lấy dữ liệu mới
       const freshResponse = await postsAPI.getAll();
-      console.log(freshResponse.data);
       const mappedPosts = Array.isArray(freshResponse.data)
         ? freshResponse.data.map((p: any) => ({
             id: p.id,
@@ -108,9 +119,9 @@ function Home() {
         : [];
       setPosts(mappedPosts);
     } catch (error: any) {
-      //const errorMsg = error.response?.data?.message || error.message || "Đăng bài thất bại";
-      //console.error("Post creation error:", errorMsg);
-      //alert(`Lỗi: ${errorMsg}`);
+      const errorMsg = error.response?.data?.message || error.message || "Đăng bài thất bại";
+      console.error("Post creation error:", errorMsg);
+      alert(`❌ Lỗi: ${errorMsg}`);
     }
   };
 

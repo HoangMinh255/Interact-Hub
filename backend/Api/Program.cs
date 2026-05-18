@@ -59,6 +59,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddScoped<IHashtagService, HashtagService>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
 // Đăng ký tầng Application (Repositories)
 builder.Services.AddScoped<IPostRepository, PostRepository>();

@@ -13,10 +13,14 @@ namespace InteractHub.Api.Controllers;
 public class PostController : ControllerBase
 {
     private readonly IPostService _postService;
+    private readonly ICloudinaryService _cloudinaryService;
+    private readonly ILogger<PostController> _logger;
 
-    public PostController(IPostService postService)
+    public PostController(IPostService postService, ICloudinaryService cloudinaryService, ILogger<PostController> logger)
     {
         _postService = postService;
+        _cloudinaryService = cloudinaryService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -89,7 +93,7 @@ public class PostController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreatePost([FromBody] CreatePostDto dto)
+    public async Task<IActionResult> CreatePost([FromForm] CreatePostDto dto, [FromForm] List<IFormFile> files)
     {
         try
         {
@@ -99,11 +103,47 @@ public class PostController : ControllerBase
                 return Unauthorized(new { message = "Không thể xác thực danh tính người dùng." });
             }
 
+            _logger.LogInformation("Đang xử lý yêu cầu tạo bài viết.");
+
+            if (dto == null) 
+            {
+                return BadRequest(new { message = "Dữ liệu gửi lên không hợp lệ." });
+            }
+
+            // 2. BẢO HIỂM CHỐNG NULL (Rất Quan Trọng)
+            // Nếu Frontend không gửi lên, tự động gán bằng rỗng để Service không bị lỗi
+            dto.Content ??= ""; 
+            dto.Hashtags ??= new List<string>();
+            dto.Media ??= new List<MediaItemDto>();
+
             if(string.IsNullOrWhiteSpace(dto.Content))
             {
                 return BadRequest(new { message = "Bài viết phải có nội dung hoặc ít nhất một media." });
             }
+            dto.Media = new List<MediaItemDto>();
 
+            if (files != null && files.Count > 0)
+            {
+                foreach (var file in files)
+                {
+                    // Đẩy file lên Cloudinary
+                    var uploadUrl = await _cloudinaryService.UploadFileAsync(file);
+                    
+                    if (!string.IsNullOrEmpty(uploadUrl))
+                    {
+                        // Tự động kiểm tra xem file vừa up là Ảnh hay Video dựa vào ContentType
+                        int mediaType = file.ContentType.StartsWith("video/") ? 1 : 0;
+
+                        // Thêm vào danh sách Media của DTO
+                        dto.Media.Add(new MediaItemDto 
+                        { 
+                            MediaUrl = uploadUrl, 
+                            MediaType = mediaType 
+                        });
+                    }
+                }
+            }
+            
             var createdPost = await _postService.CreatePost(userId, dto);
             return Ok(new 
             { 
