@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
-import { storiesAPI, postsAPI, usersAPI, resolveMediaUrl } from "../api";
+import { postsAPI, usersAPI, resolveMediaUrl } from "../api";
+import { IoCameraOutline } from "react-icons/io5";
 
 import type { Post } from "../types";
 
@@ -104,6 +105,7 @@ function Profile() {
           mediaUrls: item.mediaUrls ?? [],
           likesCount: item.likesCount ?? 0,
           commentCount: item.commentCount ?? 0,
+          hashtag: item.hashtags || item.hashtag || [],
         }));
 
         setPosts((prev) => (postPage === 0 ? mappedPosts : [...prev, ...mappedPosts]));
@@ -189,7 +191,7 @@ function Profile() {
                     onClick={() => fileRef.current?.click()}
                     className="absolute bottom-0 right-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white"
                   >
-                    📷
+                    <IoCameraOutline className="text-sm" />
                   </button>
                   <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
                 </>
@@ -211,11 +213,10 @@ function Profile() {
                         setFriendLoading(true);
                         await (await import("../api")).friendsAPI.sendRequest(authUser.id, profileUserId);
                         
-                        // Tạo thông báo gửi cho người kia
                         const notificationData = {
-                          recipientId: profileUserId, // Người nhận là chủ của Profile này
-                          actorId: authUser.id,       // Người thực hiện (người đang đăng nhập)
-                          type: 2,                    // Quy ước Type 2 là Lời mời kết bạn
+                          recipientId: profileUserId, 
+                          actorId: authUser.id,       
+                          type: 2,                    
                           content: `${authUser.fullName} đã gửi cho bạn một lời mời kết bạn.`,
                           relatedEntityType: "User",  
                           relatedEntityId: authUser.id,

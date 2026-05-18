@@ -188,7 +188,7 @@ const Navbar = () => {
 
         {/* Search — hidden on mobile, visible md+ */}
         <div className="relative flex-1 max-w-sm hidden md:block">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><FcSearch /></span>
           <input
             type="text"
             placeholder="Tìm kiếm bài viết, bạn bè ..."
@@ -362,7 +362,7 @@ const Navbar = () => {
 
           {/* Mobile search bar */}
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><FcSearch /></span>
             <input
               type="text"
               placeholder="Tìm kiếm..."

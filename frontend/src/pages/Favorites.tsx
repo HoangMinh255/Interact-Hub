@@ -3,6 +3,8 @@ import type { Post } from "../types";
 import PostCard from "../components/PostCard";
 import Sidebar from "../components/layout/Sidebar";
 import { postsAPI } from "../api";
+import { CiHeart} from "react-icons/ci";
+import { TbHeartBrokenFilled } from "react-icons/tb";
 
 const Favorites = () => {
   const [favorites, setFavorites] = useState<Post[]>([]);
@@ -75,9 +77,9 @@ const Favorites = () => {
             </div>
           ) : favorites.length === 0 ? (
             <div className="border border-dashed border-gray-200 rounded-xl p-10 text-center bg-gray-50">
-              <p className="text-3xl mb-3">💔</p>
+              <p className="text-3xl mb-3"><TbHeartBrokenFilled className="text-red-500 inline-block align-middle"/></p>
               <p className="text-sm font-medium text-gray-600">Chưa có bài viết yêu thích</p>
-              <p className="text-xs text-gray-400 mt-1">Bấm ❤️ vào bài viết để thêm vào đây</p>
+              <p className="text-xs text-gray-400 mt-1">Bấm <CiHeart className="text-red-500 inline-block align-middle"/> vào bài viết để thêm vào đây</p>
             </div>
           ) : (
             <div className="flex flex-col gap-4">

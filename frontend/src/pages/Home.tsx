@@ -71,19 +71,30 @@ function Home() {
   const handlePost = async () => {
     if (!newPost.trim() && selectedMedia.length === 0) return;
 
-    // 1. Khởi tạo FormData
+    // Khởi tạo FormData
     const formData = new FormData();
-    formData.append("Content", newPost.trim());
+
+    const originalText = newPost.trim();
+    const cleanContent = originalText.replace(/#\S+/g, "").replace(/\s+/g, " ").trim();
+
+    formData.append("Content", cleanContent);
     formData.append("Visibility", visibility.toString());
 
-    // 2. Đính kèm các file thực tế vào formData
+    const hashtagMatches = newPost.match(/#\w+/g);
+    const uniqueHashtags = Array.from(new Set(hashtagMatches))
+
+    uniqueHashtags.forEach((tag) => {
+      formData.append("Hashtags", tag.replace('#', '')); 
+    });
+
+    // Đính kèm các file thực tế vào formData
     selectedMedia.forEach((m) => {
       formData.append("files", m.file); 
       console.log(`Đã thêm file vào FormData: ${m.file.name} (${m.file.type})`);
     });
 
     try {
-      // 3. Truyền thẳng formData vào API
+      // Truyền thẳng formData vào API
       const response = await postsAPI.create(formData);
       console.log("Post created:", response.data);
 
@@ -94,7 +105,7 @@ function Home() {
       selectedMedia.forEach(m => URL.revokeObjectURL(m.url));
       setSelectedMedia([]);
 
-      // 4. Reload lại posts để lấy dữ liệu mới
+      // Reload lại posts để lấy dữ liệu mới
       const freshResponse = await postsAPI.getAll();
       const mappedPosts = Array.isArray(freshResponse.data)
         ? freshResponse.data.map((p: any) => ({
@@ -121,7 +132,7 @@ function Home() {
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || error.message || "Đăng bài thất bại";
       console.error("Post creation error:", errorMsg);
-      alert(`❌ Lỗi: ${errorMsg}`);
+      alert(`Lỗi: ${errorMsg}`);
     }
   };
 

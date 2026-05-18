@@ -9,6 +9,7 @@ import ShareModal from "./ShareModal";
 import { CiHeart, CiShare2 } from "react-icons/ci";
 import { FaRegComment} from "react-icons/fa";
 import { MdDeleteOutline } from "react-icons/md";
+import { PiFlagPennantFill } from "react-icons/pi";
 
 
 
@@ -267,8 +268,8 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
             onClick={() => setShowReportModal(true)}
             className="text-xs text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50"
             title="Báo cáo bài viết"
-          >
-            🚩 Báo cáo
+          >          
+            <PiFlagPennantFill /> Báo cáo
           </button>
         )}
       </div>
@@ -327,7 +328,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
             return (
               <div key={c.id} className="mb-4">
                 
-                {/* 1. BÌNH LUẬN CHA GỐC */}
+                {/* BÌNH LUẬN CHA */}
                 <div className="flex gap-2">
                   {c.authorAvatar ? (
                     <img src={resolveMediaUrl(c.authorAvatar) ?? undefined} className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-100 z-10" />
@@ -340,7 +341,9 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                   <div className="flex flex-col">
                     <div className="bg-gray-100 rounded-2xl px-3 py-2 text-sm text-gray-800">
                       <span className="font-semibold block text-[13px]">{c.authorName}</span>
-                      <p>{c.content}</p>
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                        {post.content}
+                      </p>
                     </div>
                     <button 
                       onClick={() => setReplyingTo(isReplying ? null : c.id)}
@@ -351,7 +354,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                   </div>
                 </div>
 
-                {/* 2. CÁC BÌNH LUẬN CON */}
+                {/* CÁC BÌNH LUẬN CON */}
                 {(hasReplies || isReplying) && (
                   <div className="ml-4 pl-4 border-l-2 border-gray-200 mt-1 flex flex-col gap-3 pt-2">
                     
@@ -388,7 +391,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                       </div>
                     ))}
 
-                    {/* 3. Ô NHẬP PHẢN HỒI */}
+                    {/* Ô NHẬP PHẢN HỒI */}
                     {isReplying && (
                       <div className="flex gap-2 relative items-center">
                         <div className="absolute -left-4 top-1/2 w-4 h-[2px] bg-gray-200"></div>
@@ -442,8 +445,6 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
           </div>
         </div>
       )}
-
-      {/* --- CÁC MODAL HỖ TRỢ TỪ NHÁNH MOBILE FRIENDLY --- */}
       <ReportModal
         postId={post.id}
         isOpen={showReportModal}

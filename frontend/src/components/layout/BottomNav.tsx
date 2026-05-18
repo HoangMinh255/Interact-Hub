@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { IoMdSettings } from "react-icons/io";
-import { FaHeart, FaUserFriends, FaLightbulb } from "react-icons/fa";
-import { FcSearch, FcHome } from "react-icons/fc";
+import { FaHeart, FaUserFriends } from "react-icons/fa";
+import { FcHome } from "react-icons/fc";
+import { PiFlagPennantFill } from "react-icons/pi";
 
 const BottomNav = () => {
   return (
@@ -27,7 +28,7 @@ const BottomNav = () => {
       <NavLink to="/reports" className={({ isActive }) =>
         `flex-1 flex flex-col items-center py-2 text-xs ${isActive ? "text-blue-500" : "text-gray-500"}`
       }>
-        <span className="text-lg">🚩</span>
+        <span className="text-lg"><PiFlagPennantFill /></span>
         Báo cáo
       </NavLink>
       <NavLink to="/settings" className={({ isActive }) =>

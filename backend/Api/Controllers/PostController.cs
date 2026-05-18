@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using InteractHub.Application.Common;
 using System.Security.Claims;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace InteractHub.Api.Controllers;
 [ApiController]
@@ -62,33 +63,6 @@ public class PostController : ControllerBase
 
         return Ok(result);
     }
-
-    // [HttpGet("id/{id}")]
-    // public async Task<IActionResult> GetPostById(Guid id)
-    // {
-    //     var post = await _postService.GetPostById(id);
-    //     if (post == null)
-    //     {
-    //         return NotFound();
-    //     }
-
-    //     var result = post.Select(p => new 
-    //     {
-    //         Id = p.Id,
-    //         Content = p.Content,
-    //         Visibility = p.Visibility,
-    //         CreatedAt = p.CreatedAt,
-    //         // Lấy những chuỗi cần thiết từ User
-    //         AuthorName = p.User?.FullName, 
-    //         AuthorAvatar = p.User?.AvatarUrl,
-    //         // Lấy URL của danh sách ảnh
-    //         MediaUrls = p.Media?.Select(m => m.MediaUrl).ToList(),
-    //         // Đếm số lượng comment 
-    //         CommentCount = p.Comments?.Count ?? 0 
-    //     });
-
-    //     return Ok(result);
-    // }
     
 
     [HttpPost]
@@ -110,7 +84,6 @@ public class PostController : ControllerBase
                 return BadRequest(new { message = "Dữ liệu gửi lên không hợp lệ." });
             }
 
-            // 2. BẢO HIỂM CHỐNG NULL (Rất Quan Trọng)
             // Nếu Frontend không gửi lên, tự động gán bằng rỗng để Service không bị lỗi
             dto.Content ??= ""; 
             dto.Hashtags ??= new List<string>();
@@ -153,7 +126,6 @@ public class PostController : ControllerBase
         }
         catch(Exception ex)
         {
-            // Log lỗi ở đây nếu cần
             return StatusCode(500, new { message = "Đã xảy ra lỗi khi tạo bài viết.", error = ex.Message });
         }
     }
@@ -207,7 +179,7 @@ public class PostController : ControllerBase
 
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> UpdatePost(Guid id, [FromBody] UpdatePostDto dto)
+    public async Task<IActionResult> UpdatePost(Guid id, [FromForm] UpdatePostDto dto, [FromForm] List<IFormFile> files)
     {
         try
         {
@@ -215,10 +187,32 @@ public class PostController : ControllerBase
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            // Validate DTO cơ bản
+            dto ??= new UpdatePostDto();
+            dto.Media ??= new List<MediaItemDto>();
+            dto.Hashtags ??= new List<string>();
+            
             if (string.IsNullOrWhiteSpace(dto.Content))
             {
                 return BadRequest(new { message = "Nội dung bài viết không được để trống." });
+            }
+
+            if (files != null && files.Count > 0)
+            {
+                foreach (var file in files)
+                {
+                    // Đẩy file lên Cloudinary
+                    var uploadUrl = await _cloudinaryService.UploadFileAsync(file);
+                    
+                    if (!string.IsNullOrEmpty(uploadUrl))
+                    {
+                        int mediaType = file.ContentType.StartsWith("video/") ? 1 : 0;
+                        dto.Media.Add(new MediaItemDto 
+                        { 
+                            MediaUrl = uploadUrl, 
+                            MediaType = mediaType 
+                        });
+                    }
+                }
             }
 
             // Gọi Service xử lý
@@ -229,6 +223,8 @@ public class PostController : ControllerBase
                 // Trả về NotFound nếu bài viết không tồn tại, HOẶC người sửa không phải là chủ bài viết
                 return NotFound(new { message = "Không tìm thấy bài viết hoặc bạn không có quyền chỉnh sửa!" });
             }
+
+            
 
             return Ok(new { message = "Cập nhật bài viết thành công!" });
         }
