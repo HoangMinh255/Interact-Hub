@@ -171,8 +171,8 @@ const Friends = () => {
                 const name = r.friendName ?? r.fullName ?? r.userName ?? r.name ?? "Người dùng";
                 return (
                   <div key={key} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50">
-                    <Link to={targetId ? `/profile/${targetId}` : `/profile`} className="shrink-0">
-                      <Avatar name={name} size="md" />
+                      <Link to={targetId ? `/profile/${targetId}` : `/profile`} className="shrink-0">
+                      <Avatar name={name} size="md" avatarUrl={r.avatarUrl ?? r.friendAvatar ?? r.avatar ?? null} />
                     </Link>
                     <div className="flex-1">
                       {targetId ? (

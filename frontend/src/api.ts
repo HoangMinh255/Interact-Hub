@@ -112,6 +112,7 @@ export const postsAPI = {
   isLiked: (postId: string) => api.get(`/posts/${postId}/likes/me`),
   getLikeCount: (postId: string) => api.get(`/posts/${postId}/likes/count`),
   delete: (postId: string) => api.delete(`/post/${postId}`),
+  update: (postId: string, content: string) => api.put(`/post/${postId}`, { Content: content }),
   share: (postId: string, comment?: string) => api.post(`/post/${postId}/share`, { Comment: comment }),
   getShares: (postId: string, page = 0) => api.get(`/post/${postId}/shares`, { params: { page } }),
 };
