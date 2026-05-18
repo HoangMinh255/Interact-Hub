@@ -234,6 +234,9 @@ function Home() {
                 key={post.id}
                 post={post}
                 onDelete={isAuthor ? () => handleDelete(post.id) : undefined}
+                onUpdate={isAuthor ? (updatedContent) => {
+                  setPosts(posts.map(p => p.id === post.id ? { ...p, content: updatedContent } : p));
+                } : undefined}
                 onHashtagClick={(tag) => {setActiveTag(tag);
                                           window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}  

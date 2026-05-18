@@ -85,7 +85,20 @@ public class PostRepository : IPostRepository
 
     public async Task<bool> UpdatePostWithDetailsAsync(Guid postId, string userId, string content, int visibility, List<PostMedia>? newMedias, List<string>? newHashtags)
     {
-        // 1. Lấy Post lên KÈM THEO các bảng liên quan. Kiểm tra luôn userId.
+        // 1. First check if this is a PostShare (shared post) that the user owns
+        var existingShare = await _context.PostShares
+            .FirstOrDefaultAsync(s => s.Id == postId && s.SharerId == userId && !s.IsDeleted);
+
+        if (existingShare != null)
+        {
+            // Update the comment on the shared post
+            existingShare.Comment = content;
+            _context.PostShares.Update(existingShare);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // 2. If not a PostShare, try to find a Post that the user owns
         var existingPost = await _context.Posts
             .Include(p => p.Media)
             .Include(p => p.PostHashtags)
@@ -94,12 +107,12 @@ public class PostRepository : IPostRepository
 
         if (existingPost == null) return false; // Không tìm thấy hoặc không phải chủ bài viết
 
-        // 2. Cập nhật thông tin bảng chính
+        // 3. Cập nhật thông tin bảng chính
         existingPost.Content = content;
         existingPost.Visibility = (byte)visibility;
         existingPost.UpdatedAt = DateTime.UtcNow;
 
-        // 3. Xử lý Media
+        // 4. Xử lý Media
         if (newMedias != null)
         {
             var incomingUrls = newMedias.Select(m => m.MediaUrl).ToList();
@@ -121,7 +134,7 @@ public class PostRepository : IPostRepository
             }
         }
 
-        // 4. Xử lý Hashtag 
+        // 5. Xử lý Hashtag 
         if (newHashtags != null)
         {
             var incomingTags = newHashtags.Select(t => t.ToLower().Trim().Trim('#')).Where(t => !string.IsNullOrEmpty(t)).Distinct().ToList();
@@ -159,6 +172,17 @@ public class PostRepository : IPostRepository
 
     public async Task<bool> DeletePost(Guid postId, string userId)
     {
+        // First, try to delete a PostShare with this ID owned by this user
+        var existingShare = await _context.PostShares.FirstOrDefaultAsync(s => s.Id == postId && s.SharerId == userId && s.IsDeleted == false);
+        if (existingShare != null)
+        {
+            existingShare.IsDeleted = true;
+            _context.PostShares.Update(existingShare);
+            await SaveChanges();
+            return true;
+        }
+
+        // If not a PostShare, try to delete a Post with this ID owned by this user
         var existingPost = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId && p.UserId == userId && p.IsDeleted == false);
         if (existingPost == null)
         {

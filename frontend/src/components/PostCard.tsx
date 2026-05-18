@@ -25,10 +25,11 @@ interface CommentItem {
 interface PostCardProps {
   post: Post;
   onDelete?: () => void;
+  onUpdate?: (updatedContent: string) => void;
   onHashtagClick?: (tag: string) => void;
 }
 
-function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
+function PostCard({ post, onDelete, onUpdate, onHashtagClick }: PostCardProps) {
   const { user } = useAuth(); 
   
   const [liked, setLiked] = useState(false);
@@ -48,12 +49,12 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content ?? "");
   const [savingEdit, setSavingEdit] = useState(false);
-  const [localContent, setLocalContent] = useState(post.isShared ? (post.originalContent ?? "") : (post.content ?? ""));
+  const [localContent, setLocalContent] = useState(post.content ?? "");
 
   useEffect(() => {
-    setLocalContent(post.isShared ? (post.originalContent ?? "") : (post.content ?? ""));
+    setLocalContent(post.content ?? "");
     setEditContent(post.content ?? "");
-  }, [post.content, post.originalContent, post.isShared]);
+  }, [post.content]);
 
   useEffect(() => {
     if (!showComment) return;
@@ -288,8 +289,8 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
 
       {post.isShared && post.content && (
         <div className="mb-3 pb-3 border-b border-gray-200">
-          <p className="text-sm text-gray-600 italic bg-blue-50 rounded-lg px-3 py-2 border-l-2 border-blue-400">
-            "{post.content}"
+          <p className="text-sm text-gray-600 bg-blue-50 rounded-lg px-3 py-2 border-l-2 border-blue-400">
+            {post.content}
           </p>
         </div>
       )}
@@ -308,8 +309,11 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
                 try {
                   setSavingEdit(true);
                   await postsAPI.update(post.id, editContent);
-                  setLocalContent(post.isShared ? (post.originalContent ?? "") : editContent);
+                  setLocalContent(editContent);
                   setIsEditing(false);
+                  if (onUpdate) {
+                    onUpdate(editContent);
+                  }
                 } catch (err) {
                   console.error("Failed to update post:", err);
                 } finally {
@@ -327,7 +331,7 @@ function PostCard({ post, onDelete, onHashtagClick }: PostCardProps) {
         <p className="text-sm text-gray-700 mb-3 whitespace-pre-wrap">
           {renderContentWithHashtags(
             ( post.isShared ? 
-              (localContent ?? post.originalContent ?? "")
+              (post.originalContent ?? "")
               : (localContent ?? post.content ?? "")
             ) + (post.hashtag?.map(tag => ` #${tag}`).join("") ?? "")
           )}

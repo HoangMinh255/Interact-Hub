@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ENBbOPoXWJU=",
+  "dgSpecHash": "MNV81LxVRk8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\New folder\\Interact-Hub-test\\Interact-Hub-test\\backend\\api\\Api.csproj",
+  "projectFilePath": "C:\\Users\\hp\\Desktop\\csharp\\interact\\New folder\\Interact-Hub-test\\Interact-Hub-test\\backend\\Api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\hp\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\hp\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
