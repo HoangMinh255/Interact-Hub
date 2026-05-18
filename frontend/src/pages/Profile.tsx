@@ -12,15 +12,6 @@ interface ProfileForm {
   bio: string;
 }
 
-interface StoryItem {
-  id: string;
-  content?: string | null;
-  mediaUrl?: string | null;
-  mediaType?: string | null;
-  expireAt: string;
-  isActive: boolean;
-  createdAt: string;
-}
 
 function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -36,8 +27,7 @@ function Profile() {
   const [postsLoading, setPostsLoading] = useState(false);
   const [postPage, setPostPage] = useState(0);
   const [hasMorePosts, setHasMorePosts] = useState(true);
-  const [stories, setStories] = useState<StoryItem[]>([]);
-  const [storiesLoading, setStoriesLoading] = useState(false);
+  
   const [isLoading, setIsLoading] = useState(false);
   const [friendRequestSent, setFriendRequestSent] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
@@ -88,27 +78,7 @@ function Profile() {
       }
     };
 
-    const loadStories = async () => {
-      try {
-        if (!isOwnProfile) {
-          setStories([]);
-          return;
-        }
-
-        setStoriesLoading(true);
-        const response = await storiesAPI.getMyStories();
-        const items = response.data?.data ?? [];
-        setStories(items);
-      } catch (error) {
-        console.error("Failed to load stories:", error);
-        setStories([]);
-      } finally {
-        setStoriesLoading(false);
-      }
-    };
-
     loadProfile();
-    loadStories();
   }, [authUser, userId, isOwnProfile, setValue]);
 
   useEffect(() => {
@@ -288,41 +258,7 @@ function Profile() {
         </div>
       </div>
 
-      {isOwnProfile && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-800">Story của bạn</h3>
-            <span className="text-xs text-gray-400">{stories.length} story</span>
-          </div>
-
-          {storiesLoading ? (
-            <p className="text-sm text-gray-400">Đang tải story...</p>
-          ) : stories.length === 0 ? (
-            <p className="text-sm text-gray-400">Bạn chưa đăng story nào.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {stories.map((story) => (
-                <div key={story.id} className="border border-gray-200 rounded-xl p-3">
-                  {story.mediaUrl && (
-                    <div className="mb-2 overflow-hidden rounded-lg bg-gray-100">
-                      {story.mediaType?.startsWith("video") ? (
-                        <video src={story.mediaUrl} controls className="w-full max-h-56 object-cover" />
-                      ) : (
-                        <img src={story.mediaUrl} alt="Story media" className="w-full max-h-56 object-cover" />
-                      )}
-                    </div>
-                  )}
-                  {story.content && <p className="text-sm text-gray-700 mb-2">{story.content}</p>}
-                  <div className="flex items-center justify-between text-xs text-gray-400">
-                    <span>{new Date(story.createdAt).toLocaleString("vi-VN")}</span>
-                    <span>{story.isActive ? "Đang hoạt động" : "Đã ẩn"}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      
 
       {isOwnProfile && isEditing && (
         <div className="bg-white border border-gray-200 rounded-xl p-6 mb-4">

@@ -39,7 +39,7 @@ function ReportModal({ postId, isOpen, onClose, onSubmit }: ReportModalProps) {
       }, 1500);
     } catch (err) {
       const errorData = (err as any)?.response?.data;
-      let errorMessage = "Báo cáo thất bại. Vui lòng thử lại.";
+      let errorMessage = "Báo cáo thất bại. Bạn đã báo cáo bài viết này rồi.";
 
       if (Array.isArray(errorData?.errors)) {
         errorMessage = errorData.errors[0] ?? errorData.message ?? errorMessage;
