@@ -1,11 +1,8 @@
 import { NavLink } from "react-router-dom";
-<<<<<<< HEAD
 import { IoMdSettings } from "react-icons/io";
 import { FaHeart, FaUserFriends } from "react-icons/fa";
 import { FcSearch, FcHome } from "react-icons/fc";
 import { PiFlagPennantFill } from "react-icons/pi";
-=======
->>>>>>> origin/feature/avatar
 
 const Sidebar = () => {
   return (
@@ -18,11 +15,7 @@ const Sidebar = () => {
           }`
         }
       >
-<<<<<<< HEAD
         <span className="w-7 h-7 rounded-md bg-yellow-100 flex items-center justify-center"><FcHome /></span>
-=======
-        <span className="w-7 h-7 rounded-md bg-yellow-100 flex items-center justify-center">🏠</span>
->>>>>>> origin/feature/avatar
         Tin tức
       </NavLink>
 
@@ -34,11 +27,7 @@ const Sidebar = () => {
           }`
         }
       >
-<<<<<<< HEAD
         <span className="w-7 h-7 rounded-md bg-orange-100 flex items-center justify-center"><PiFlagPennantFill className="text-red-500" /></span>
-=======
-        <span className="w-7 h-7 rounded-md bg-orange-100 flex items-center justify-center">🚩</span>
->>>>>>> origin/feature/avatar
         Báo cáo
       </NavLink>
 
@@ -50,11 +39,7 @@ const Sidebar = () => {
           }`
         }
       >
-<<<<<<< HEAD
         <span className="w-7 h-7 rounded-md bg-pink-100 flex items-center justify-center"><FaHeart className="text-red-500"/></span>
-=======
-        <span className="w-7 h-7 rounded-md bg-pink-100 flex items-center justify-center">❤️</span>
->>>>>>> origin/feature/avatar
         Yêu thích
       </NavLink>
 
@@ -66,11 +51,7 @@ const Sidebar = () => {
           }`
         }
       >
-<<<<<<< HEAD
         <span className="w-7 h-7 rounded-md bg-indigo-100 flex items-center justify-center"><FaUserFriends className="text-blue-500"/></span>
-=======
-        <span className="w-7 h-7 rounded-md bg-indigo-100 flex items-center justify-center">👥</span>
->>>>>>> origin/feature/avatar
         Bạn bè
       </NavLink>
 
@@ -84,11 +65,7 @@ const Sidebar = () => {
           }`
         }
       >
-<<<<<<< HEAD
         <span className="w-7 h-7 rounded-md bg-gray-100 flex items-center justify-center"><IoMdSettings className="text-grey-500"/></span>
-=======
-        <span className="w-7 h-7 rounded-md bg-gray-100 flex items-center justify-center">⚙️</span>
->>>>>>> origin/feature/avatar
         Cài đặt
       </NavLink>
     </aside>
