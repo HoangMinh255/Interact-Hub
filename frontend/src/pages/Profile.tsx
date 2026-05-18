@@ -102,7 +102,7 @@ function Profile() {
           createdAt: item.createdAt ?? "",
           authorName: item.authorName ?? viewedUser?.fullName ?? "Unknown",
           authorAvatar: item.authorAvatar ?? viewedUser?.avatarUrl,
-          author: viewedUser?.id ? { id: viewedUser.id, fullName: viewedUser.fullName, userName: viewedUser.userName ?? "", email: viewedUser.email ?? "", followersCount: viewedUser.followersCount ?? 0 } : undefined,
+          authorId: item.authorId ?? viewedUser?.id,
           mediaUrls: item.mediaUrls ?? [],
           likesCount: item.likesCount ?? 0,
           commentCount: item.commentCount ?? 0,

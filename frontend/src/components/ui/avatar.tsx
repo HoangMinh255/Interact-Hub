@@ -3,7 +3,7 @@ import { resolveMediaUrl } from "../../api";
 interface AvatarProps {
   name: string;
   avatarUrl?: string | null;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   color?: string;
 }
 

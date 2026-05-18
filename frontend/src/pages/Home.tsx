@@ -108,26 +108,32 @@ function Home() {
 
       // Reload lại posts để lấy dữ liệu mới
       const freshResponse = await postsAPI.getAll();
+      console.log("Raw API response:", freshResponse.data);
       const mappedPosts = Array.isArray(freshResponse.data)
-        ? freshResponse.data.map((p: any) => ({
+        ? freshResponse.data.map((p: any) => {
+            if (p.isShared) {
+              console.log(`Shared post ${p.id}: content="${p.content}" vs originalContent="${p.originalContent}"`);
+            }
+            return {
             id: p.id,
             visibility: p.visibility,
             authorName: p.authorName ?? "Unknown",
             authorAvatar: p.authorAvatar ?? "",
-            author: p.authorId ? { id: p.authorId, fullName: p.authorName ?? "", userName: "", email: "", followersCount: 0 } : undefined,
+            authorId: p.authorId,
             content: p.content,
             mediaUrls: p.mediaUrls ?? [],
             likesCount: 0,
             commentCount: p.commentCount ?? 0,
             createdAt: new Date(p.createdAt).toLocaleString("vi-VN"),
             isShared: p.isShared ?? false,
-            shareComment: p.shareComment,
-            sharedById: p.sharedById,
-            sharedByName: p.sharedByName,
-            sharedByAvatar: p.sharedByAvatar ?? undefined,
+            originalContent: p.originalContent ?? "",
+            originalAuthorId: p.originalAuthorId ?? null,
+            originalAuthorName: p.originalAuthorName ?? "",
+            originalAuthorAvatar: p.originalAuthorAvatar ?? undefined,
             originalPostId: p.originalPostId,
             hashtag: p.hashtags || p.hashtag || [],
-          }))
+            };
+          })
         : [];
       setPosts(mappedPosts);
     } catch (error: any) {
@@ -233,14 +239,12 @@ function Home() {
           </div>
         ) : (
           filteredPosts.map((post) => {
-            const originalAuthorId = post.author?.id ?? (post as any).authorId;
-            const reposterId = post.sharedById ?? (post as any).sharedById ?? null;
-            const isOwnPost = user?.id === originalAuthorId || user?.id === reposterId;
+            const isAuthor = user?.id === (post.authorId ?? (post as any).authorId ?? null);
             return (
               <PostCard
                 key={post.id}
                 post={post}
-                onDelete={isOwnPost ? () => handleDelete(post.id) : undefined}
+                onDelete={isAuthor ? () => handleDelete(post.id) : undefined}
                 onHashtagClick={(tag) => {setActiveTag(tag);
                                           window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}  
