@@ -1,0 +1,1 @@
+namespace InteractHub.Domain.Entities;
